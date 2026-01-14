@@ -292,7 +292,7 @@ function InvoiceForm({
 
                 <div className="form-group" style={{ marginTop: '20px' }}>
                     <label>GST Type</label>
-                    <div style={{ display: 'flex', gap: '20px', marginTop: '10px' }}>
+                    <div className="gst-type-options">
                         <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
                             <input
                                 type="radio"

@@ -332,6 +332,18 @@ body {
     transform: translateY(-1px);
 }
 
+/* GST Type Options */
+.gst-type-options {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.gst-type-options label {
+    white-space: nowrap;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .form-grid {
@@ -965,6 +977,17 @@ body {
     .form-actions {
         flex-direction: column;
         gap: 12px;
+    }
+
+    /* GST Type Options - Stack Vertically */
+    .gst-type-options {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .gst-type-options label {
+        padding: 10px 0;
+        white-space: normal;
     }
 
     /* Totals Section */
