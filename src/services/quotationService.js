@@ -46,6 +46,35 @@ export async function getQuotation(id) {
 }
 
 /**
+ * Check if an invoice number already exists
+ * @param {string} invoiceNumber - Invoice number to check
+ * @param {string} excludeId - Optional ID to exclude from check (for updates)
+ * @returns {Promise<boolean>} True if invoice number exists, false otherwise
+ */
+export async function checkInvoiceNumberExists(invoiceNumber, excludeId = null) {
+    try {
+        let query = supabase
+            .from('quotations')
+            .select('id, quotation_no')
+            .eq('quotation_no', invoiceNumber);
+
+        // If updating an existing quotation, exclude its own ID
+        if (excludeId) {
+            query = query.neq('id', excludeId);
+        }
+
+        const { data, error } = await query;
+
+        if (error) throw error;
+
+        return data && data.length > 0;
+    } catch (error) {
+        console.error('Error checking invoice number:', error);
+        throw error;
+    }
+}
+
+/**
  * Save a new quotation
  * @param {Object} quotationData - Quotation data
  * @returns {Promise<Object>} Created quotation object

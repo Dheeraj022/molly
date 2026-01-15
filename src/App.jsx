@@ -9,28 +9,62 @@ import BuyerManager from './components/BuyerManager';
 import QuotationList from './components/QuotationList';
 import { calculateInvoiceTotals } from './utils/gstCalculation';
 import { numberToWords } from './utils/numberToWords';
-import { saveQuotation, updateQuotation, generateQuotationNumber } from './services/quotationService';
+import { saveQuotation, updateQuotation, generateQuotationNumber, checkInvoiceNumberExists } from './services/quotationService';
 import Login from './components/Login';
+import Register from './components/Register';
+import ForgotPassword from './components/ForgotPassword';
+import VerifyEmail from './components/VerifyEmail';
+import { onAuthStateChange, signOut } from './services/authService';
 import './styles/form.css';
 import './styles/invoice.css';
 import './styles/icons.css';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [authView, setAuthView] = useState('login'); // 'login', 'register', 'forgot-password', 'verify-email'
 
+  // Listen to auth state changes
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    setIsAuthenticated(isLoggedIn);
+    const { data: { subscription } } = onAuthStateChange((event, session) => {
+      if (session?.user) {
+        setIsAuthenticated(true);
+        setCurrentUser(session.user);
+      } else {
+        setIsAuthenticated(false);
+        setCurrentUser(null);
+      }
+      setAuthLoading(false);
+    });
+
+    // Cleanup subscription
+    return () => {
+      subscription?.unsubscribe();
+    };
   }, []);
 
-  const handleLogin = () => {
-    localStorage.setItem('isLoggedIn', 'true');
+  // Check URL hash for email verification
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash.includes('type=signup') || hash.includes('type=email') || hash.includes('type=recovery')) {
+      setAuthView('verify-email');
+    }
+  }, []);
+
+  const handleLogin = (user) => {
     setIsAuthenticated(true);
+    setCurrentUser(user);
+    setAuthView('login');
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('isLoggedIn');
-    setIsAuthenticated(false);
+  const handleLogout = async () => {
+    const result = await signOut();
+    if (result.success) {
+      setIsAuthenticated(false);
+      setCurrentUser(null);
+      setAuthView('login');
+    }
   };
   const [formData, setFormData] = useState({
     sellerName: '',
@@ -179,6 +213,22 @@ function App() {
     }
 
     try {
+      // Check for duplicate invoice number (only when creating new quotation)
+      if (!currentQuotationId) {
+        const exists = await checkInvoiceNumberExists(formData.invoiceNumber);
+        if (exists) {
+          alert(`❌ Invoice number "${formData.invoiceNumber}" already exists! Please use a different invoice number.`);
+          return;
+        }
+      } else {
+        // When updating, check if the invoice number conflicts with other quotations
+        const exists = await checkInvoiceNumberExists(formData.invoiceNumber, currentQuotationId);
+        if (exists) {
+          alert(`❌ Invoice number "${formData.invoiceNumber}" already exists! Please use a different invoice number.`);
+          return;
+        }
+      }
+
       const quotationData = {
         invoiceNumber: formData.invoiceNumber,
         companyId: selectedCompany?.id,
@@ -291,6 +341,22 @@ function App() {
     }
 
     try {
+      // Step 1.5: Check for duplicate invoice number before proceeding
+      if (!currentQuotationId) {
+        const exists = await checkInvoiceNumberExists(formData.invoiceNumber);
+        if (exists) {
+          alert(`❌ Invoice number "${formData.invoiceNumber}" already exists! Please use a different invoice number.`);
+          return;
+        }
+      } else {
+        // When updating, check if the invoice number conflicts with other quotations
+        const exists = await checkInvoiceNumberExists(formData.invoiceNumber, currentQuotationId);
+        if (exists) {
+          alert(`❌ Invoice number "${formData.invoiceNumber}" already exists! Please use a different invoice number.`);
+          return;
+        }
+      }
+
       // Step 2: Prepare quotation data
       const quotationData = {
         invoiceNumber: formData.invoiceNumber,
@@ -386,34 +452,87 @@ function App() {
   const totals = calculateInvoiceTotals(items, gstRate, gstType);
   const amountInWords = numberToWords(totals.totalAfterTax);
 
+  // Show loading state while checking auth
+  if (authLoading) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        fontSize: '18px',
+        color: '#666'
+      }}>
+        Loading...
+      </div>
+    );
+  }
+
+  // Show auth screens if not authenticated
   if (!isAuthenticated) {
-    return <Login onLogin={handleLogin} />;
+    if (authView === 'register') {
+      return <Register onBackToLogin={() => setAuthView('login')} />;
+    }
+    if (authView === 'forgot-password') {
+      return <ForgotPassword onBackToLogin={() => setAuthView('login')} />;
+    }
+    if (authView === 'verify-email') {
+      return <VerifyEmail onBackToLogin={() => setAuthView('login')} />;
+    }
+    return (
+      <Login
+        onLogin={handleLogin}
+        onShowRegister={() => setAuthView('register')}
+        onShowForgotPassword={() => setAuthView('forgot-password')}
+      />
+    );
   }
 
   return (
     <div className="container">
       <header className="app-header">
-        <h1>GST Tax Invoice Maker</h1>
-        <p className="subtitle">Professional invoice generator with instant PDF download</p>
-        <button
-          onClick={handleLogout}
-          className="logout-button"
-          style={{
-            position: 'absolute',
-            top: '20px',
-            right: '20px',
-            padding: '8px 16px',
-            background: 'rgba(255, 59, 48, 0.1)',
-            color: '#ff3b30',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: 'pointer',
+        <div style={{ flex: 1 }}>
+          <h1>GST Tax Invoice Maker</h1>
+          <p className="subtitle">Professional invoice generator with instant PDF download</p>
+        </div>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          paddingLeft: '20px'
+        }}>
+          <span style={{
             fontSize: '14px',
-            fontWeight: '500'
-          }}
-        >
-          Logout
-        </button>
+            color: 'rgba(255, 255, 255, 0.9)',
+            whiteSpace: 'nowrap'
+          }}>
+            {currentUser?.email}
+          </span>
+          <button
+            onClick={handleLogout}
+            className="logout-button"
+            style={{
+              padding: '8px 16px',
+              background: 'rgba(255, 255, 255, 0.2)',
+              color: 'white',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: '500',
+              transition: 'all 0.2s',
+              whiteSpace: 'nowrap'
+            }}
+            onMouseOver={(e) => {
+              e.target.style.background = 'rgba(255, 255, 255, 0.3)';
+            }}
+            onMouseOut={(e) => {
+              e.target.style.background = 'rgba(255, 255, 255, 0.2)';
+            }}
+          >
+            Logout
+          </button>
+        </div>
       </header>
 
       <div className="invoice-form">

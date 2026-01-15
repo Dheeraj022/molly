@@ -1,59 +1,128 @@
 import { useState } from 'react';
+import { signIn } from '../services/authService';
 import '../styles/login.css';
 
-function Login({ onLogin }) {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+function Login({ onLogin, onShowRegister, onShowForgotPassword }) {
+    const [formData, setFormData] = useState({
+        email: '',
+        password: ''
+    });
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+        setError('');
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
 
-        const AUTH_EMAIL = 'info@shaadiplatform.com';
-        const AUTH_PASS = 'Shaadi@2025#';
+        if (!formData.email || !formData.password) {
+            setError('Please enter both email and password');
+            return;
+        }
 
-        if (email === AUTH_EMAIL && password === AUTH_PASS) {
-            onLogin();
+        setLoading(true);
+
+        const result = await signIn(formData.email, formData.password);
+
+        setLoading(false);
+
+        if (result.success) {
+            onLogin(result.data.user);
         } else {
-            setError('Invalid email or password');
+            // Handle specific error messages
+            if (result.error.includes('Invalid login credentials')) {
+                setError('Invalid email or password');
+            } else if (result.error.includes('Email not confirmed')) {
+                setError('Please verify your email address before logging in');
+            } else {
+                setError(result.error || 'Login failed. Please try again.');
+            }
         }
     };
 
     return (
         <div className="login-container">
-            <div className="login-card">
-                <h1 className="login-title">Sign In</h1>
-                <p className="login-subtitle">Invoice Maker</p>
+            <div className="login-box">
+                <div className="login-header">
+                    <div className="logo-circle">
+                        <span className="logo-text">INV</span>
+                    </div>
+                    <h1 className="login-title">Welcome Back</h1>
+                    <p className="login-subtitle">Sign in to GST Invoice Maker</p>
+                </div>
 
                 <form onSubmit={handleSubmit} className="login-form">
+                    {error && (
+                        <div className="error-message">
+                            {error}
+                        </div>
+                    )}
+
                     <div className="form-group">
+                        <label htmlFor="email">Email Address</label>
                         <input
                             type="email"
-                            placeholder="Email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            id="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            placeholder="your.email@example.com"
                             required
-                            className="login-input"
+                            disabled={loading}
                         />
                     </div>
 
                     <div className="form-group">
+                        <label htmlFor="password">Password</label>
                         <input
                             type="password"
-                            placeholder="Password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            id="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            placeholder="Enter your password"
                             required
-                            className="login-input"
+                            disabled={loading}
                         />
                     </div>
 
-                    {error && <div className="login-error">{error}</div>}
+                    <div className="form-options">
+                        <button
+                            type="button"
+                            onClick={onShowForgotPassword}
+                            className="link-button"
+                            disabled={loading}
+                        >
+                            Forgot Password?
+                        </button>
+                    </div>
 
-                    <button type="submit" className="login-button">
-                        Sign In
+                    <button
+                        type="submit"
+                        className="login-button"
+                        disabled={loading}
+                    >
+                        {loading ? 'Signing In...' : 'Sign In'}
                     </button>
+
+                    <div className="login-footer">
+                        Don't have an account?{' '}
+                        <button
+                            type="button"
+                            onClick={onShowRegister}
+                            className="link-button"
+                            disabled={loading}
+                        >
+                            Create Account
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>

@@ -290,39 +290,36 @@ function InvoiceForm({
                     />
                 </div>
 
-                <div className="form-group" style={{ marginTop: '20px' }}>
-                    <label>GST Type</label>
+                <div className="gst-type-container">
+                    <label className="gst-type-label">GST Type</label>
                     <div className="gst-type-options">
-                        <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                        <label>
                             <input
                                 type="radio"
                                 name="gstType"
                                 value="CGST_SGST"
                                 checked={gstType === 'CGST_SGST'}
                                 onChange={(e) => onGstTypeChange(e.target.value)}
-                                style={{ marginRight: '8px' }}
                             />
                             Intra-State (CGST + SGST)
                         </label>
-                        <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                        <label>
                             <input
                                 type="radio"
                                 name="gstType"
                                 value="IGST"
                                 checked={gstType === 'IGST'}
                                 onChange={(e) => onGstTypeChange(e.target.value)}
-                                style={{ marginRight: '8px' }}
                             />
                             Inter-State (IGST)
                         </label>
-                        <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                        <label>
                             <input
                                 type="radio"
                                 name="gstType"
                                 value=""
                                 checked={gstType === ''}
                                 onChange={() => onGstTypeChange('')}
-                                style={{ marginRight: '8px' }}
                             />
                             None
                         </label>
