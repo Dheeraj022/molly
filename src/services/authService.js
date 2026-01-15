@@ -9,6 +9,9 @@ import { supabase } from './supabase';
  */
 export async function signUp(email, password, phone = '') {
     try {
+        const redirectUrl = `${window.location.origin}/verify-email`;
+        console.log('🔗 specific redirect URL:', redirectUrl);
+
         const { data, error } = await supabase.auth.signUp({
             email,
             password,
@@ -16,7 +19,7 @@ export async function signUp(email, password, phone = '') {
                 data: {
                     phone: phone || null
                 },
-                emailRedirectTo: `${window.location.origin}/verify-email`
+                emailRedirectTo: redirectUrl
             }
         });
 
