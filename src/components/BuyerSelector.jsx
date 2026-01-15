@@ -61,7 +61,7 @@ function BuyerSelector({ onBuyerSelect, onManageClick, selectedBuyerId }) {
                     onChange={handleBuyerChange}
                     disabled={loading}
                 >
-                    <option value="">-- Select a buyer or enter manually --</option>
+                    <option value="">-- Select a buyer --</option>
                     {buyers.map(buyer => (
                         <option key={buyer.id} value={buyer.id}>
                             {buyer.buyer_name}
