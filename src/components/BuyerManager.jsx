@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { getBuyers, saveBuyer, updateBuyer, deleteBuyer } from '../services/buyerService';
 import Icons, { ICON_SIZES } from './icons';
 
-function BuyerManager({ isOpen, onClose, onBuyerSaved }) {
+function BuyerManager({ isOpen, onClose, onBuyerSaved, userId }) {
     const [buyers, setBuyers] = useState([]);
     const [editingBuyer, setEditingBuyer] = useState(null);
     const [showNewBuyerForm, setShowNewBuyerForm] = useState(false);
@@ -27,17 +27,17 @@ function BuyerManager({ isOpen, onClose, onBuyerSaved }) {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (isOpen) {
+        if (isOpen && userId) {
             loadBuyers();
         }
-    }, [isOpen]);
+    }, [isOpen, userId]);
 
     async function loadBuyers() {
         try {
             console.log('🔄 Loading buyers in manager...');
             setLoading(true);
             setError(null);
-            const data = await getBuyers();
+            const data = await getBuyers(userId);
             console.log('✅ Loaded buyers:', data.length);
             setBuyers(data);
         } catch (err) {
@@ -106,7 +106,7 @@ function BuyerManager({ isOpen, onClose, onBuyerSaved }) {
                 buyerEmail: newBuyerData.buyerEmail.trim().toLowerCase() || ''
             };
 
-            const savedBuyer = await saveBuyer(buyerData);
+            const savedBuyer = await saveBuyer(buyerData, userId);
             console.log('✅ New buyer saved:', savedBuyer);
 
             // Refresh the buyers list
@@ -173,8 +173,11 @@ function BuyerManager({ isOpen, onClose, onBuyerSaved }) {
             };
 
             if (editingBuyer) {
-                await updateBuyer(editingBuyer.id, buyerData);
+                await updateBuyer(editingBuyer.id, buyerData, userId);
                 alert('Buyer updated successfully!');
+            } else {
+                await saveBuyer(buyerData, userId);
+                alert('Buyer saved successfully!');
             }
 
             await loadBuyers();

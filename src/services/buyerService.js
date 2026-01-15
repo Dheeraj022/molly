@@ -6,16 +6,23 @@
 import { supabase } from './supabase';
 
 /**
- * Get all buyers from Supabase
+ * Get all buyers from Supabase for a specific user
+ * @param {string} userId - User UUID from auth
  * @returns {Promise<Array>} Array of buyer objects
  */
-export async function getBuyers() {
+export async function getBuyers(userId) {
     try {
+        if (!userId) {
+            console.error('❌ No user ID provided to getBuyers');
+            return [];
+        }
+
         console.log('🔄 Loading buyers from Supabase...');
 
         const { data, error } = await supabase
             .from('buyers')
             .select('*')
+            .eq('user_id', userId)
             .order('buyer_name');
 
         if (error) {
@@ -64,13 +71,19 @@ export async function getBuyer(id) {
 /**
  * Save new buyer to Supabase
  * @param {Object} buyerData - Buyer data object
+ * @param {string} userId - User UUID from auth
  * @returns {Promise<Object>} Saved buyer object
  */
-export async function saveBuyer(buyerData) {
+export async function saveBuyer(buyerData, userId) {
     try {
+        if (!userId) {
+            throw new Error('User ID is required to save buyer');
+        }
+
         const { data, error } = await supabase
             .from('buyers')
             .insert([{
+                user_id: userId,
                 buyer_name: buyerData.buyerName,
                 address: buyerData.buyerAddress,
                 gst_number: buyerData.buyerGST || null,
@@ -102,10 +115,15 @@ export async function saveBuyer(buyerData) {
  * Update existing buyer in Supabase
  * @param {string} id - Buyer UUID
  * @param {Object} buyerData - Updated buyer data
+ * @param {string} userId - User UUID from auth (for verification)
  * @returns {Promise<Object>} Updated buyer object
  */
-export async function updateBuyer(id, buyerData) {
+export async function updateBuyer(id, buyerData, userId) {
     try {
+        if (!userId) {
+            throw new Error('User ID is required to update buyer');
+        }
+
         const { data, error } = await supabase
             .from('buyers')
             .update({
@@ -116,6 +134,7 @@ export async function updateBuyer(id, buyerData) {
                 email: buyerData.buyerEmail || null
             })
             .eq('id', id)
+            .eq('user_id', userId)
             .select()
             .single();
 

@@ -1,21 +1,23 @@
 import { useState, useEffect } from 'react';
 import { getCompanies } from '../services/companyService';
 
-function CompanySelector({ onCompanySelect, onManageClick, selectedCompanyId }) {
+function CompanySelector({ onCompanySelect, onManageClick, selectedCompanyId, userId }) {
     const [companies, setCompanies] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        loadCompanies();
-    }, []);
+        if (userId) {
+            loadCompanies();
+        }
+    }, [userId]);
 
     async function loadCompanies() {
         try {
             setLoading(true);
             setError(null);
             console.log('🔄 Loading companies from Supabase...');
-            const data = await getCompanies();
+            const data = await getCompanies(userId);
             setCompanies(data);
             console.log('✅ Companies loaded successfully:', data.length);
         } catch (err) {

@@ -1,14 +1,21 @@
 import { supabase } from './supabase';
 
 /**
- * Get all companies from database
+ * Get all companies from database for a specific user
+ * @param {string} userId - User UUID from auth
  * @returns {Promise<Array>} Array of company objects
  */
-export async function getCompanies() {
+export async function getCompanies(userId) {
     try {
+        if (!userId) {
+            console.error('❌ No user ID provided to getCompanies');
+            return [];
+        }
+
         const { data, error } = await supabase
             .from('companies')
             .select('*')
+            .eq('user_id', userId)
             .order('company_name');
 
         if (error) {
@@ -114,20 +121,25 @@ export async function uploadSignature(file) {
 /**
  * Save a new company to database
  * @param {Object} companyData - Company form data
+ * @param {string} userId - User UUID from auth
  * @returns {Promise<Object>} Created company object
  */
-export async function saveCompany(companyData) {
+export async function saveCompany(companyData, userId) {
     try {
+        if (!userId) {
+            throw new Error('User ID is required to save company');
+        }
+
         const { data, error } = await supabase
             .from('companies')
             .insert([{
+                user_id: userId,
                 company_name: companyData.sellerName,
                 address: companyData.sellerAddress,
                 phone: companyData.sellerPhone,
                 gst_number: companyData.sellerGST,
                 pan_number: companyData.sellerPAN || null,
                 email: companyData.sellerEmail,
-                tagline: companyData.sellerTagline || null,
                 tagline: companyData.sellerTagline || null,
                 logo_url: companyData.logoUrl || null,
                 signature_url: companyData.signatureUrl || null
@@ -157,10 +169,15 @@ export async function saveCompany(companyData) {
  * Update an existing company
  * @param {string} id - Company UUID
  * @param {Object} companyData - Updated company data
+ * @param {string} userId - User UUID from auth (for verification)
  * @returns {Promise<Object>} Updated company object
  */
-export async function updateCompany(id, companyData) {
+export async function updateCompany(id, companyData, userId) {
     try {
+        if (!userId) {
+            throw new Error('User ID is required to update company');
+        }
+
         const { data, error } = await supabase
             .from('companies')
             .update({
@@ -171,11 +188,11 @@ export async function updateCompany(id, companyData) {
                 pan_number: companyData.sellerPAN || null,
                 email: companyData.sellerEmail,
                 tagline: companyData.sellerTagline || null,
-                tagline: companyData.sellerTagline || null,
                 logo_url: companyData.logoUrl || null,
                 signature_url: companyData.signatureUrl || null
             })
             .eq('id', id)
+            .eq('user_id', userId)
             .select()
             .single();
 

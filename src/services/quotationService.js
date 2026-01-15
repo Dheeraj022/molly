@@ -1,11 +1,17 @@
 import { supabase } from './supabase';
 
 /**
- * Get all quotations with company details
+ * Get all quotations with company details for a specific user
+ * @param {string} userId - User UUID from auth
  * @returns {Promise<Array>} Array of quotation objects
  */
-export async function getQuotations() {
+export async function getQuotations(userId) {
     try {
+        if (!userId) {
+            console.error('❌ No user ID provided to getQuotations');
+            return [];
+        }
+
         const { data, error } = await supabase
             .from('quotations')
             .select(`
@@ -14,6 +20,7 @@ export async function getQuotations() {
           company_name
         )
       `)
+            .eq('user_id', userId)
             .order('created_at', { ascending: false });
 
         if (error) throw error;
@@ -46,17 +53,23 @@ export async function getQuotation(id) {
 }
 
 /**
- * Check if an invoice number already exists
+ * Check if an invoice number already exists for a specific user
  * @param {string} invoiceNumber - Invoice number to check
+ * @param {string} userId - User UUID from auth
  * @param {string} excludeId - Optional ID to exclude from check (for updates)
  * @returns {Promise<boolean>} True if invoice number exists, false otherwise
  */
-export async function checkInvoiceNumberExists(invoiceNumber, excludeId = null) {
+export async function checkInvoiceNumberExists(invoiceNumber, userId, excludeId = null) {
     try {
+        if (!userId) {
+            throw new Error('User ID is required to check invoice number');
+        }
+
         let query = supabase
             .from('quotations')
             .select('id, quotation_no')
-            .eq('quotation_no', invoiceNumber);
+            .eq('quotation_no', invoiceNumber)
+            .eq('user_id', userId);
 
         // If updating an existing quotation, exclude its own ID
         if (excludeId) {
@@ -77,13 +90,19 @@ export async function checkInvoiceNumberExists(invoiceNumber, excludeId = null) 
 /**
  * Save a new quotation
  * @param {Object} quotationData - Quotation data
+ * @param {string} userId - User UUID from auth
  * @returns {Promise<Object>} Created quotation object
  */
-export async function saveQuotation(quotationData) {
+export async function saveQuotation(quotationData, userId) {
     try {
+        if (!userId) {
+            throw new Error('User ID is required to save quotation');
+        }
+
         const { data, error } = await supabase
             .from('quotations')
             .insert([{
+                user_id: userId,
                 quotation_no: quotationData.invoiceNumber,
                 company_id: quotationData.companyId || null,
                 buyer_name: quotationData.buyerName,
@@ -112,10 +131,15 @@ export async function saveQuotation(quotationData) {
  * Update an existing quotation
  * @param {string} id - Quotation UUID
  * @param {Object} quotationData - Updated quotation data
+ * @param {string} userId - User UUID from auth (for verification)
  * @returns {Promise<Object>} Updated quotation object
  */
-export async function updateQuotation(id, quotationData) {
+export async function updateQuotation(id, quotationData, userId) {
     try {
+        if (!userId) {
+            throw new Error('User ID is required to update quotation');
+        }
+
         const { data, error } = await supabase
             .from('quotations')
             .update({
@@ -131,6 +155,7 @@ export async function updateQuotation(id, quotationData) {
                 status: quotationData.status
             })
             .eq('id', id)
+            .eq('user_id', userId)
             .select()
             .single();
 

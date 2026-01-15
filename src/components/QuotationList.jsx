@@ -2,22 +2,22 @@ import { useState, useEffect } from 'react';
 import { getQuotations, deleteQuotation, duplicateQuotation, convertToInvoice, generateQuotationNumber } from '../services/quotationService';
 import Icons, { ICON_SIZES } from './icons';
 
-function QuotationList({ isOpen, onClose, onLoadQuotation }) {
+function QuotationList({ isOpen, onClose, onLoadQuotation, userId }) {
     const [quotations, setQuotations] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (isOpen) {
+        if (isOpen && userId) {
             loadQuotations();
         }
-    }, [isOpen]);
+    }, [isOpen, userId]);
 
     async function loadQuotations() {
         try {
             setLoading(true);
             setError(null);
-            const data = await getQuotations();
+            const data = await getQuotations(userId);
             setQuotations(data);
         } catch (err) {
             setError('Failed to load quotations');

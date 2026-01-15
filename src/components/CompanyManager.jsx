@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { getCompanies, saveCompany, updateCompany, deleteCompany, uploadLogo, uploadSignature } from '../services/companyService';
 import Icons, { ICON_SIZES } from './icons';
 
-function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData }) {
+function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData, userId }) {
     const [companies, setCompanies] = useState([]);
     const [editingCompany, setEditingCompany] = useState(null);
     const [showNewCompanyForm, setShowNewCompanyForm] = useState(false);
@@ -37,16 +37,16 @@ function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData }) {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (isOpen) {
+        if (isOpen && userId) {
             loadCompanies();
         }
-    }, [isOpen]);
+    }, [isOpen, userId]);
 
     async function loadCompanies() {
         try {
             setLoading(true);
             console.log('🔄 Loading companies in manager...');
-            const data = await getCompanies();
+            const data = await getCompanies(userId);
             setCompanies(data);
             console.log('✅ Loaded companies:', data.length);
         } catch (err) {
@@ -187,7 +187,7 @@ function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData }) {
                 signatureUrl: newCompanyData.signatureUrl || ''
             };
 
-            const savedCompany = await saveCompany(companyData);
+            const savedCompany = await saveCompany(companyData, userId);
             console.log('✅ New company saved:', savedCompany);
 
             // Refresh the companies list
@@ -241,10 +241,10 @@ function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData }) {
             setError(null);
 
             if (editingCompany) {
-                await updateCompany(editingCompany.id, formData);
+                await updateCompany(editingCompany.id, formData, userId);
                 alert('Company updated successfully!');
             } else {
-                await saveCompany(formData);
+                await saveCompany(formData, userId);
                 alert('Company saved successfully!');
             }
 

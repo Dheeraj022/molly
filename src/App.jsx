@@ -286,10 +286,10 @@ function App() {
       };
 
       if (currentQuotationId) {
-        await updateQuotation(currentQuotationId, quotationData);
+        await updateQuotation(currentQuotationId, quotationData, currentUser.id);
         alert('Quotation updated successfully!');
       } else {
-        await saveQuotation(quotationData);
+        await saveQuotation(quotationData, currentUser.id);
         alert('Quotation saved successfully!');
       }
     } catch (error) {
@@ -375,14 +375,14 @@ function App() {
     try {
       // Step 1.5: Check for duplicate invoice number before proceeding
       if (!currentQuotationId) {
-        const exists = await checkInvoiceNumberExists(formData.invoiceNumber);
+        const exists = await checkInvoiceNumberExists(formData.invoiceNumber, currentUser.id);
         if (exists) {
           alert(`❌ Invoice number "${formData.invoiceNumber}" already exists! Please use a different invoice number.`);
           return;
         }
       } else {
         // When updating, check if the invoice number conflicts with other quotations
-        const exists = await checkInvoiceNumberExists(formData.invoiceNumber, currentQuotationId);
+        const exists = await checkInvoiceNumberExists(formData.invoiceNumber, currentUser.id, currentQuotationId);
         if (exists) {
           alert(`❌ Invoice number "${formData.invoiceNumber}" already exists! Please use a different invoice number.`);
           return;
@@ -419,11 +419,11 @@ function App() {
       let savedQuotation;
       if (currentQuotationId) {
         // Update existing quotation
-        savedQuotation = await updateQuotation(currentQuotationId, quotationData);
+        savedQuotation = await updateQuotation(currentQuotationId, quotationData, currentUser.id);
         console.log('✅ Invoice updated:', savedQuotation);
       } else {
         // Create new quotation
-        savedQuotation = await saveQuotation(quotationData);
+        savedQuotation = await saveQuotation(quotationData, currentUser.id);
         setCurrentQuotationId(savedQuotation.id); // Store the new ID
         console.log('✅ Invoice saved:', savedQuotation);
       }
@@ -578,6 +578,7 @@ function App() {
           onCompanySelect={handleCompanySelect}
           onManageClick={() => setShowCompanyManager(true)}
           selectedCompanyId={selectedCompany?.id}
+          userId={currentUser?.id}
         />
 
         {/* Buyer Selector */}
@@ -585,6 +586,7 @@ function App() {
           onBuyerSelect={handleBuyerSelect}
           onManageClick={() => setShowBuyerManager(true)}
           selectedBuyerId={selectedBuyer?.id}
+          userId={currentUser?.id}
         />
 
         {/* Main Invoice Form */}
@@ -641,6 +643,7 @@ function App() {
           sellerEmail: formData.sellerEmail,
           sellerTagline: formData.sellerTagline
         }}
+        userId={currentUser?.id}
       />
 
 
@@ -654,12 +657,14 @@ function App() {
             handleBuyerSelect(buyer);
           }
         }}
+        userId={currentUser?.id}
       />
 
       <QuotationList
         isOpen={showQuotationList}
         onClose={() => setShowQuotationList(false)}
         onLoadQuotation={handleLoadQuotation}
+        userId={currentUser?.id}
       />
     </div>
   );

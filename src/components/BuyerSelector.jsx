@@ -1,19 +1,21 @@
 import { useState, useEffect } from 'react';
 import { getBuyers } from '../services/buyerService';
 
-function BuyerSelector({ onBuyerSelect, onManageClick, selectedBuyerId }) {
+function BuyerSelector({ onBuyerSelect, onManageClick, selectedBuyerId, userId }) {
     const [buyers, setBuyers] = useState([]);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        loadBuyers();
-    }, []);
+        if (userId) {
+            loadBuyers();
+        }
+    }, [userId]);
 
     async function loadBuyers() {
         try {
             console.log('🔄 Loading buyers from Supabase...');
             setLoading(true);
-            const data = await getBuyers();
+            const data = await getBuyers(userId);
             console.log('✅ Buyers loaded successfully:', data.length);
             setBuyers(data);
         } catch (err) {
