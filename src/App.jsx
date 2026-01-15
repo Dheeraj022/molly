@@ -69,33 +69,23 @@ function App() {
       console.log('🔄 Logout button clicked...');
       const result = await signOut();
       console.log('📤 Logout result:', result);
-
-      // Force logout even if Supabase session is missing
-      // This handles cases where local state is out of sync
-      if (result.success || result.error === 'Auth session missing!') {
-        console.log('✅ Logging out and resetting state...');
-        setIsAuthenticated(false);
-        setCurrentUser(null);
-        setAuthView('login');
-        setShowLanding(true);
-        console.log('✅ State reset complete');
-      } else {
-        console.error('❌ Logout failed:', result.error);
-        // Still reset state on error to prevent stuck state
-        setIsAuthenticated(false);
-        setCurrentUser(null);
-        setAuthView('login');
-        setShowLanding(true);
-        alert(`Logout completed with warning: ${result.error || 'Unknown error'}`);
-      }
     } catch (error) {
       console.error('❌ Logout exception:', error);
-      // Force reset on exception
+    } finally {
+      // ALWAYS perform local cleanup, regardless of server response
+      console.log('✅ Performing local logout cleanup...');
+
+      // Clear all storage to prevent sticky sessions
+      localStorage.clear();
+      sessionStorage.clear();
+
+      // Reset app state
       setIsAuthenticated(false);
       setCurrentUser(null);
       setAuthView('login');
       setShowLanding(true);
-      alert(`Logged out (with error: ${error.message})`);
+
+      console.log('✅ Local state reset complete');
     }
   };
   const [formData, setFormData] = useState({
