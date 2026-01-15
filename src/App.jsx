@@ -7,6 +7,7 @@ import CompanyManager from './components/CompanyManager';
 import BuyerSelector from './components/BuyerSelector';
 import BuyerManager from './components/BuyerManager';
 import QuotationList from './components/QuotationList';
+import LandingPage from './components/LandingPage';
 import { calculateInvoiceTotals } from './utils/gstCalculation';
 import { numberToWords } from './utils/numberToWords';
 import { saveQuotation, updateQuotation, generateQuotationNumber, checkInvoiceNumberExists } from './services/quotationService';
@@ -20,6 +21,7 @@ import './styles/invoice.css';
 import './styles/icons.css';
 
 function App() {
+  const [showLanding, setShowLanding] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
@@ -52,6 +54,10 @@ function App() {
     }
   }, []);
 
+  const handleGetStarted = () => {
+    setShowLanding(false);
+  };
+
   const handleLogin = (user) => {
     setIsAuthenticated(true);
     setCurrentUser(user);
@@ -59,11 +65,37 @@ function App() {
   };
 
   const handleLogout = async () => {
-    const result = await signOut();
-    if (result.success) {
+    try {
+      console.log('🔄 Logout button clicked...');
+      const result = await signOut();
+      console.log('📤 Logout result:', result);
+
+      // Force logout even if Supabase session is missing
+      // This handles cases where local state is out of sync
+      if (result.success || result.error === 'Auth session missing!') {
+        console.log('✅ Logging out and resetting state...');
+        setIsAuthenticated(false);
+        setCurrentUser(null);
+        setAuthView('login');
+        setShowLanding(true);
+        console.log('✅ State reset complete');
+      } else {
+        console.error('❌ Logout failed:', result.error);
+        // Still reset state on error to prevent stuck state
+        setIsAuthenticated(false);
+        setCurrentUser(null);
+        setAuthView('login');
+        setShowLanding(true);
+        alert(`Logout completed with warning: ${result.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('❌ Logout exception:', error);
+      // Force reset on exception
       setIsAuthenticated(false);
       setCurrentUser(null);
       setAuthView('login');
+      setShowLanding(true);
+      alert(`Logged out (with error: ${error.message})`);
     }
   };
   const [formData, setFormData] = useState({
@@ -466,6 +498,11 @@ function App() {
         Loading...
       </div>
     );
+  }
+
+  // Show landing page first
+  if (showLanding && !isAuthenticated) {
+    return <LandingPage onGetStarted={handleGetStarted} />;
   }
 
   // Show auth screens if not authenticated
