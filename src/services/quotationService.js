@@ -16,9 +16,7 @@ export async function getQuotations(userId) {
             .from('quotations')
             .select(`
         *,
-        companies (
-          company_name
-        )
+        companies (*)
       `)
             .eq('user_id', userId)
             .order('created_at', { ascending: false });

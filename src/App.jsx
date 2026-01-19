@@ -129,6 +129,10 @@ function App() {
   const [showBuyerManager, setShowBuyerManager] = useState(false);
   const [showQuotationList, setShowQuotationList] = useState(false);
 
+  // Download PDF state
+  const [downloadData, setDownloadData] = useState(null);
+  const downloadRef = useRef(null);
+
   const handleFormChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
@@ -427,14 +431,9 @@ function App() {
     }
   };
 
-  // Extract PDF generation logic
-  const generatePDFDocument = () => {
-    const element = invoiceRef.current;
+  // Shared PDF generation logic
+  const generatePDF = (element, filename) => {
     element.style.display = 'block';
-
-    const invoiceNumber = formData.invoiceNumber;
-    const cleanInvoiceNumber = invoiceNumber.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-_]/g, '');
-    const filename = `Invoice_${cleanInvoiceNumber}.pdf`;
 
     const opt = {
       margin: 0,
@@ -456,20 +455,108 @@ function App() {
       pagebreak: { mode: 'css', avoid: 'tr' }
     };
 
-    html2pdf()
+    return html2pdf()
       .set(opt)
       .from(element)
       .save(filename)
       .then(() => {
         element.style.display = 'none';
-        alert('✅ Invoice saved and PDF generated successfully!');
+        return true;
       })
       .catch(err => {
         console.error('❌ PDF generation error:', err);
-        alert('Invoice saved but PDF generation failed. Please try again.');
         element.style.display = 'none';
+        throw err;
       });
   };
+
+  // Generate PDF for current form
+  const generatePDFDocument = () => {
+    const invoiceNumber = formData.invoiceNumber;
+    const cleanInvoiceNumber = invoiceNumber.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-_]/g, '');
+    const filename = `Invoice_${cleanInvoiceNumber}.pdf`;
+
+    generatePDF(invoiceRef.current, filename)
+      .then(() => alert('✅ Invoice saved and PDF generated successfully!'))
+      .catch(() => alert('Invoice saved but PDF generation failed. Please try again.'));
+  };
+
+  // Handle download from Quotation List
+  const handleDownloadQuotation = (quotation) => {
+    const company = quotation.companies || {};
+    const inv = quotation.invoice_details || {};
+
+    const qItems = (quotation.items || []).map(item => ({
+      ...item,
+      rate: item.rate || (item.unit ? item.amount / item.unit : 0),
+      excludeGST: item.excludeGST || false
+    }));
+
+    const qFormData = {
+      // Seller Details
+      sellerName: company.company_name || '',
+      sellerAddress: company.address || '',
+      sellerPhone: company.phone || '',
+      sellerGST: company.gst_number || '',
+      sellerPAN: company.pan_number || '',
+      sellerEmail: company.email || '',
+      sellerTagline: company.tagline || '',
+      logoUrl: company.logo_url || '',
+      sellerSignature: company.signature_url || '',
+
+      // Buyer Details
+      buyerName: quotation.buyer_name || '',
+      buyerAddress: quotation.buyer_address || '',
+      buyerGST: quotation.buyer_gst || '',
+
+      // Invoice Details
+      invoiceNumber: quotation.quotation_no,
+      invoiceDate: quotation.created_at,
+      deliveryNote: inv.deliveryNote || '',
+      paymentMode: inv.paymentMode || '',
+      supplierRef: inv.supplierRef || '',
+      otherRef: inv.otherRef || '',
+      buyerPO: inv.buyerPO || '',
+      poDate: inv.poDate || '',
+      dispatchThrough: inv.dispatchThrough || '',
+      destination: inv.destination || '',
+      termsOfDelivery: inv.termsOfDelivery || ''
+    };
+
+    const qGstRate = quotation.gst_rate || 18;
+    const qGstType = inv.gstType || '';
+    const qTotals = calculateInvoiceTotals(qItems, qGstRate, qGstType);
+    const qAmountInWords = numberToWords(qTotals.totalAfterTax);
+
+    setDownloadData({
+      formData: qFormData,
+      items: qItems,
+      gstRate: qGstRate,
+      gstType: qGstType,
+      totals: qTotals,
+      amountInWords: qAmountInWords
+    });
+  };
+
+  // Effect to trigger download when data is ready
+  useEffect(() => {
+    if (downloadData && downloadRef.current) {
+      const invoiceNumber = downloadData.formData.invoiceNumber || 'Draft';
+      const cleanInvoiceNumber = invoiceNumber.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-_]/g, '');
+      const filename = `Quotation_${cleanInvoiceNumber}.pdf`;
+
+      // Small timeout to ensure render
+      setTimeout(() => {
+        generatePDF(downloadRef.current, filename)
+          .then(() => setDownloadData(null))
+          .catch(err => {
+            console.error(err);
+            alert('Failed to download PDF');
+            setDownloadData(null);
+          });
+      }, 500);
+    }
+  }, [downloadData]);
 
   const totals = calculateInvoiceTotals(items, gstRate, gstType);
   const amountInWords = numberToWords(totals.totalAfterTax);
@@ -612,6 +699,17 @@ function App() {
           totals={totals}
           amountInWords={amountInWords}
         />
+        {downloadData && (
+          <InvoicePreview
+            ref={downloadRef}
+            formData={downloadData.formData}
+            items={downloadData.items}
+            gstRate={downloadData.gstRate}
+            gstType={downloadData.gstType}
+            totals={downloadData.totals}
+            amountInWords={downloadData.amountInWords}
+          />
+        )}
       </div>
 
       {/* Modals */}
@@ -654,6 +752,7 @@ function App() {
         isOpen={showQuotationList}
         onClose={() => setShowQuotationList(false)}
         onLoadQuotation={handleLoadQuotation}
+        onDownloadQuotation={handleDownloadQuotation}
         userId={currentUser?.id}
       />
     </div>

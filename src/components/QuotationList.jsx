@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { getQuotations, deleteQuotation, duplicateQuotation, convertToInvoice, generateQuotationNumber } from '../services/quotationService';
 import Icons, { ICON_SIZES } from './icons';
 
-function QuotationList({ isOpen, onClose, onLoadQuotation, userId }) {
+function QuotationList({ isOpen, onClose, onLoadQuotation, onDownloadQuotation, userId }) {
     const [quotations, setQuotations] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -165,6 +165,13 @@ function QuotationList({ isOpen, onClose, onLoadQuotation, userId }) {
                                                     title="Delete"
                                                 >
                                                     <Icons.Trash2 size={ICON_SIZES.lg} />
+                                                </button>
+                                                <button
+                                                    className="btn-action btn-download"
+                                                    onClick={() => onDownloadQuotation(quotation)}
+                                                    title="Download PDF"
+                                                >
+                                                    <Icons.FileDown size={ICON_SIZES.lg} />
                                                 </button>
                                             </td>
                                         </tr>
