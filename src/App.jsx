@@ -12,6 +12,7 @@ import BillHistory from './pages/BillHistory';
 import Products from './pages/Products';
 import Companies from './pages/Companies';
 import Buyers from './pages/Buyers';
+import BillingReports from './pages/BillingReports';
 import Downloads from './pages/Downloads';
 import { onAuthStateChange, signOut } from './services/authService';
 import './styles/form.css';
@@ -109,6 +110,7 @@ function App() {
         <Route path="/products" element={<Products />} />
         <Route path="/companies" element={<Companies />} />
         <Route path="/buyers" element={<Buyers />} />
+        <Route path="/billing-reports" element={<BillingReports />} />
         <Route path="/downloads" element={<Downloads />} />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />

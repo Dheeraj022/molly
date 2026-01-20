@@ -9,7 +9,8 @@ import {
     Download,
     LogOut,
     PanelLeftClose,
-    PanelLeftOpen
+    PanelLeftOpen,
+    BarChart
 } from 'lucide-react';
 import '../styles/sidebar.css';
 
@@ -23,6 +24,7 @@ const Sidebar = ({ isOpen, onLogout, isCollapsed, toggleSidebar }) => {
         { path: '/products', label: 'Products', icon: Package },
         { path: '/companies', label: 'Companies', icon: Building2 },
         { path: '/buyers', label: 'Buyers', icon: Users },
+        { path: '/billing-reports', label: 'Billing Reports', icon: BarChart },
         { path: '/downloads', label: 'Downloads', icon: Download },
     ];
 
