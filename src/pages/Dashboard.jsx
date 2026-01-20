@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../services/supabase';
 import { getDashboardStats } from '../services/dashboardService';
+import { FileText, IndianRupee, Users, Package } from 'lucide-react';
 import '../styles/dashboard.css';
 
 const Dashboard = () => {
@@ -45,33 +46,56 @@ const Dashboard = () => {
         <div className="page-container">
             <div className="page-header">
                 <h1 className="page-title">Dashboard</h1>
-                {user && <p className="page-subtitle">Welcome back, {user.email}</p>}
+                {user && <p className="page-subtitle">Welcome back, {user.email.split('@')[0]}</p>}
             </div>
 
             <div className="stats-grid">
                 <div className="stat-card">
-                    <h3 className="stat-label">Total Invoices Generated</h3>
-                    <p className="stat-value">
-                        {loading ? '...' : stats.totalInvoices}
-                    </p>
+                    <div className="stat-content">
+                        <h3 className="stat-label">Total Invoices</h3>
+                        <p className="stat-value">
+                            {loading ? '...' : stats.totalInvoices}
+                        </p>
+                    </div>
+                    <div className="stat-icon-container icon-blue">
+                        <FileText size={24} />
+                    </div>
                 </div>
+
                 <div className="stat-card">
-                    <h3 className="stat-label">Total Invoice Revenue</h3>
-                    <p className="stat-value">
-                        {loading ? '...' : formatCurrency(stats.totalRevenue)}
-                    </p>
+                    <div className="stat-content">
+                        <h3 className="stat-label">Total Revenue</h3>
+                        <p className="stat-value">
+                            {loading ? '...' : formatCurrency(stats.totalRevenue)}
+                        </p>
+                    </div>
+                    <div className="stat-icon-container icon-green">
+                        <IndianRupee size={24} />
+                    </div>
                 </div>
+
                 <div className="stat-card">
-                    <h3 className="stat-label">Total Buyers</h3>
-                    <p className="stat-value">
-                        {loading ? '...' : stats.totalBuyers}
-                    </p>
+                    <div className="stat-content">
+                        <h3 className="stat-label">Total Buyers</h3>
+                        <p className="stat-value">
+                            {loading ? '...' : stats.totalBuyers}
+                        </p>
+                    </div>
+                    <div className="stat-icon-container icon-purple">
+                        <Users size={24} />
+                    </div>
                 </div>
+
                 <div className="stat-card">
-                    <h3 className="stat-label">Total Products</h3>
-                    <p className="stat-value">
-                        {loading ? '...' : stats.totalProducts}
-                    </p>
+                    <div className="stat-content">
+                        <h3 className="stat-label">Total Products</h3>
+                        <p className="stat-value">
+                            {loading ? '...' : stats.totalProducts}
+                        </p>
+                    </div>
+                    <div className="stat-icon-container icon-orange">
+                        <Package size={24} />
+                    </div>
                 </div>
             </div>
         </div>

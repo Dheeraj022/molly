@@ -68,23 +68,67 @@
 .stat-card {
     background-color: #ffffff;
     padding: 24px;
-    border-radius: 12px;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    border: 1px solid #f3f4f6;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+}
+
+.stat-content {
+    display: flex;
+    flex-direction: column;
 }
 
 .stat-label {
     font-size: 14px;
-    color: #6b7280;
-    margin-bottom: 8px;
     font-weight: 500;
+    color: #6b7280;
+    margin: 0 0 8px 0;
 }
 
 .stat-value {
-    font-size: 32px;
+    font-size: 28px;
     font-weight: 700;
     color: #111827;
     margin: 0;
+    line-height: 1.2;
+}
+
+.stat-icon-container {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-blue {
+    background-color: #eff6ff;
+    color: #3b82f6;
+}
+
+.icon-green {
+    background-color: #ecfdf5;
+    color: #10b981;
+}
+
+.icon-purple {
+    background-color: #f3e8ff;
+    color: #a855f7;
+}
+
+.icon-orange {
+    background-color: #fff7ed;
+    color: #f97316;
 }
 
 /* Tables (Bill History, Products, etc) */
