@@ -59,7 +59,7 @@ const InvoicePreview = forwardRef(({ formData, items, gstRate, gstType, totals, 
         return `${day}.${month}.${year}`;
     };
 
-    const sellerPAN = formData.sellerPAN || (formData.sellerGST ? formData.sellerGST.substring(2, 12) : '');
+
 
     return (
         <div ref={ref} className="invoice-template">
@@ -112,7 +112,7 @@ const InvoicePreview = forwardRef(({ formData, items, gstRate, gstType, totals, 
                                         <div className="seller-name">{formData.sellerName}</div>
                                         <div className="seller-address" dangerouslySetInnerHTML={{ __html: formData.sellerAddress.replace(/\n/g, '<br>') }} />
                                         <div className="seller-contact">Tel # {formData.sellerPhone}</div>
-                                        <div className="seller-gst">GST No - {formData.sellerGST} PAN NO - {sellerPAN}</div>
+                                        <div className="seller-gst">GST No - {formData.sellerGST} {formData.sellerPAN && `PAN NO - ${formData.sellerPAN}`}</div>
                                         <div className="seller-email">E-mail - {formData.sellerEmail}</div>
                                         <div className="bill-to-label">Bill To : -</div>
                                         <div className="buyer-name">{formData.buyerName}</div>

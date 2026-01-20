@@ -407,18 +407,42 @@ function InvoiceForm({
                 </div>
             </section>
 
-            {/* Checkbox for Transporter Copy */}
-            <div className="form-group" style={{ marginBottom: '20px' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 500 }}>
-                    <input
-                        type="checkbox"
-                        checked={generateTransporter}
-                        onChange={(e) => onGenerateTransporterChange(e.target.checked)}
-                        style={{ width: '18px', height: '18px', cursor: 'pointer' }}
-                    />
-                    Generate Duplicate Copy for Transporter
-                </label>
-            </div>
+            {/* Print Settings Section */}
+            <section className="form-section">
+                <h2>Print Settings</h2>
+                <div className="form-grid">
+                    <div className="form-group full-width">
+                        <div
+                            className="checkbox-card"
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '12px',
+                                padding: '16px',
+                                border: '1px solid #e5e7eb',
+                                borderRadius: '8px',
+                                backgroundColor: '#f9fafb',
+                                cursor: 'pointer'
+                            }}
+                            onClick={() => onGenerateTransporterChange(!generateTransporter)}
+                        >
+                            <input
+                                type="checkbox"
+                                checked={generateTransporter}
+                                onChange={(e) => onGenerateTransporterChange(e.target.checked)}
+                                style={{ width: '20px', height: '20px', cursor: 'pointer', accentColor: '#2563eb' }}
+                                onClick={(e) => e.stopPropagation()}
+                            />
+                            <div>
+                                <div style={{ fontWeight: 600, color: '#111827' }}>Generate Duplicate Copy for Transporter</div>
+                                <div style={{ fontSize: '13px', color: '#6b7280', marginTop: '2px' }}>
+                                    If checked, an additional copy labeled "Duplicate for Transporter" will be generated in the PDF.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
             {/* Action Buttons */}
             <div className="form-actions">

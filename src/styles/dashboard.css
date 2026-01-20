@@ -39,6 +39,12 @@
     }
 }
 
+@media (max-width: 768px) {
+    .page-container {
+        padding: 12px;
+    }
+}
+
 .page-title {
     font-size: 24px;
     font-weight: 700;
