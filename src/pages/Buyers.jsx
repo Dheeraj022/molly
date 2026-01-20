@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Search, X, Loader2, Save } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, X, Loader2, Save, User } from 'lucide-react';
 import { getBuyers, saveBuyer, updateBuyer, deleteBuyer } from '../services/buyerService';
 import { supabase } from '../services/supabase';
 import '../styles/dashboard.css';
@@ -150,18 +150,18 @@ const Buyers = () => {
             ) : (
                 <div className="companies-list-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
                     {filteredBuyers.map(buyer => (
-                        <div key={buyer.id} className="company-card-item" style={{ background: 'white', borderRadius: '12px', padding: '24px', border: '1px solid #e5e7eb', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                    <div style={{ width: '48px', height: '48px', background: '#eff6ff', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: '#3b82f6', fontSize: '18px' }}>
-                                        {buyer.buyer_name.charAt(0).toUpperCase()}
+                        <div key={buyer.id} className="company-card-item">
+                            <div className="company-card-header">
+                                <div className="company-info">
+                                    <div className="company-avatar">
+                                        <User size={24} />
                                     </div>
-                                    <div>
-                                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600, color: '#1f2937' }}>{buyer.buyer_name}</h3>
-                                        {buyer.gst_number && <p style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>GST: {buyer.gst_number}</p>}
+                                    <div className="company-details">
+                                        <h3>{buyer.buyer_name}</h3>
+                                        {buyer.gst_number && <p>GST: {buyer.gst_number}</p>}
                                     </div>
                                 </div>
-                                <div className="action-buttons">
+                                <div className="card-actions">
                                     <button
                                         className="icon-btn btn-edit"
                                         onClick={() => handleOpenModal(buyer)}
