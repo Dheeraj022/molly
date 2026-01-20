@@ -21,7 +21,10 @@ function InvoiceForm({
     onReset,
     onSaveQuotation,
     onViewQuotations,
-    currentQuotationId
+    onViewQuotations,
+    currentQuotationId,
+    generateTransporter,
+    onGenerateTransporterChange
 }) {
     const [savedProducts, setSavedProducts] = useState([]);
     const [selectedProductId, setSelectedProductId] = useState('');
@@ -404,6 +407,19 @@ function InvoiceForm({
                     </div>
                 </div>
             </section>
+
+            {/* Checkbox for Transporter Copy */}
+            <div className="form-group" style={{ marginBottom: '20px' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 500 }}>
+                    <input
+                        type="checkbox"
+                        checked={generateTransporter}
+                        onChange={(e) => onGenerateTransporterChange(e.target.checked)}
+                        style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                    />
+                    Generate Duplicate Copy for Transporter
+                </label>
+            </div>
 
             {/* Action Buttons */}
             <div className="form-actions">

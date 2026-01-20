@@ -6,7 +6,7 @@
 .invoice-template {
     background: #ffffff;
     width: 210mm;
-    min-height: 297mm;
+    min-height: 285mm;
     margin: 0 auto;
     padding: 0;
 }
@@ -421,7 +421,7 @@ tr {
     .invoice-template {
         display: block !important;
         width: 210mm;
-        min-height: 297mm;
+        min-height: 285mm;
         margin: 0;
         padding: 0;
     }
