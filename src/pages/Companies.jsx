@@ -331,16 +331,7 @@ const Companies = () => {
                                             />
                                         </div>
 
-                                        <div className="form-group">
-                                            <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 500 }}>Tagline (Optional)</label>
-                                            <input
-                                                type="text"
-                                                value={formData.sellerTagline}
-                                                onChange={(e) => setFormData({ ...formData, sellerTagline: e.target.value })}
-                                                placeholder="e.g. Innovation for you"
-                                                style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #d1d5db' }}
-                                            />
-                                        </div>
+
                                     </div>
                                 </div>
 

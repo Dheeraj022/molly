@@ -132,16 +132,7 @@ function InvoiceForm({
                             required
                         />
                     </div>
-                    <div className="form-group full-width">
-                        <label htmlFor="sellerTagline">Company Tagline</label>
-                        <input
-                            type="text"
-                            id="sellerTagline"
-                            value={formData.sellerTagline}
-                            onChange={(e) => onFormChange('sellerTagline', e.target.value)}
-                            placeholder="AN EVENT MANAGEMENT COMPANY"
-                        />
-                    </div>
+
                 </div>
             </section>
 

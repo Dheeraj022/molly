@@ -432,16 +432,7 @@ function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData, user
                                     />
                                 </div>
 
-                                <div className="form-group full-width">
-                                    <label>Company Tagline</label>
-                                    <input
-                                        type="text"
-                                        value={newCompanyData.tagline}
-                                        onChange={(e) => setNewCompanyData({ ...newCompanyData, tagline: e.target.value })}
-                                        placeholder="AN EVENT MANAGEMENT COMPANY"
-                                        disabled={loading}
-                                    />
-                                </div>
+
                                 <div className="form-group full-width">
                                     <label>Company Logo</label>
                                     <div className="logo-upload-container" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -582,14 +573,7 @@ function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData, user
                                     />
                                 </div>
 
-                                <div className="form-group full-width">
-                                    <label>Company Tagline</label>
-                                    <input
-                                        type="text"
-                                        value={formData.sellerTagline}
-                                        onChange={(e) => setFormData({ ...formData, sellerTagline: e.target.value })}
-                                    />
-                                </div>
+
                                 <div className="form-group full-width">
                                     <label>Company Logo</label>
                                     <div className="logo-upload-container" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>

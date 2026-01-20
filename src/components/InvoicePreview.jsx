@@ -82,9 +82,6 @@ const InvoicePreview = forwardRef(({ formData, items, gstRate, gstType, totals, 
                             )}
                             {!formData.logoUrl && <div className="company-name-logo">{formData.sellerName.toUpperCase()}</div>}
                         </div>
-                        <div className="company-tagline">
-                            {(formData.sellerTagline || 'AN EVENT MANAGEMENT COMPANY').toUpperCase()}
-                        </div>
                     </div>
                 </div>
 
