@@ -37,6 +37,8 @@ function CreateBill({ userId }) {
     const [showCompanyManager, setShowCompanyManager] = useState(false);
     const [showBuyerManager, setShowBuyerManager] = useState(false);
 
+    const [generateTransporter, setGenerateTransporter] = useState(false);
+
     const invoiceRef = useRef(null);
     const totals = calculateInvoiceTotals(items, gstRate, gstType);
     const amountInWords = numberToWords(totals.totalAfterTax);
@@ -67,6 +69,7 @@ function CreateBill({ userId }) {
             termsOfDelivery: quotation.invoice_details?.termsOfDelivery || ''
         }));
         setGstType(quotation.invoice_details?.gstType || '');
+        setGenerateTransporter(quotation.invoice_details?.generateTransporter || false);
         setItems((quotation.items || []).map(item => ({
             ...item,
             rate: item.rate || (item.unit ? item.amount / item.unit : 0),
@@ -178,7 +181,7 @@ function CreateBill({ userId }) {
                 buyerName: formData.buyerName,
                 buyerAddress: formData.buyerAddress,
                 buyerGST: formData.buyerGST,
-                invoiceDetails: { ...formData, gstType },
+                invoiceDetails: { ...formData, gstType, generateTransporter },
                 items, gstRate, totals,
                 status: 'quotation'
             };
@@ -211,7 +214,7 @@ function CreateBill({ userId }) {
                 buyerName: formData.buyerName,
                 buyerAddress: formData.buyerAddress,
                 buyerGST: formData.buyerGST,
-                invoiceDetails: { ...formData, gstType },
+                invoiceDetails: { ...formData, gstType, generateTransporter },
                 items, gstRate, totals,
                 status: 'invoice'
             };
@@ -226,11 +229,12 @@ function CreateBill({ userId }) {
             // Generate PDF
             const element = invoiceRef.current;
             const opt = {
-                margin: 0,
+                margin: [5, 5, 5, 5],
                 filename: `Invoice_${formData.invoiceNumber}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
             };
 
             element.style.display = 'block';
@@ -281,19 +285,56 @@ function CreateBill({ userId }) {
                 onViewQuotations={() => navigate('/bills')}
                 currentQuotationId={currentQuotationId}
                 onGstTypeChange={setGstType}
+                generateTransporter={generateTransporter}
+                onGenerateTransporterChange={setGenerateTransporter}
             />
 
-            {/* Hidden Preview */}
+            {/* Hidden Preview using div reference for html2pdf */}
             <div style={{ display: 'none' }}>
-                <InvoicePreview
-                    ref={invoiceRef}
-                    formData={formData}
-                    items={items}
-                    gstRate={gstRate}
-                    gstType={gstType}
-                    totals={totals}
-                    amountInWords={amountInWords}
-                />
+                <div ref={invoiceRef}>
+                    {/* Copy 1: Original */}
+                    <div className="invoice-copy-page">
+                        <InvoicePreview
+                            formData={{ ...formData, copyLabel: 'Original for Recipient' }}
+                            items={items}
+                            gstRate={gstRate}
+                            gstType={gstType}
+                            totals={totals}
+                            amountInWords={amountInWords}
+                        />
+                    </div>
+
+                    <div className="html2pdf__page-break"></div>
+
+                    {/* Copy 2: Extra Copy */}
+                    <div className="invoice-copy-page">
+                        <InvoicePreview
+                            formData={{ ...formData, copyLabel: 'Extra Copy' }}
+                            items={items}
+                            gstRate={gstRate}
+                            gstType={gstType}
+                            totals={totals}
+                            amountInWords={amountInWords}
+                        />
+                    </div>
+
+                    {/* Copy 3: Transporter (Optional) */}
+                    {generateTransporter && (
+                        <>
+                            <div className="html2pdf__page-break"></div>
+                            <div className="invoice-copy-page">
+                                <InvoicePreview
+                                    formData={{ ...formData, copyLabel: 'Duplicate for Transporter' }}
+                                    items={items}
+                                    gstRate={gstRate}
+                                    gstType={gstType}
+                                    totals={totals}
+                                    amountInWords={amountInWords}
+                                />
+                            </div>
+                        </>
+                    )}
+                </div>
             </div>
 
             {/* Modals */}

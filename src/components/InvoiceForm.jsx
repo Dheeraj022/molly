@@ -21,7 +21,6 @@ function InvoiceForm({
     onReset,
     onSaveQuotation,
     onViewQuotations,
-    onViewQuotations,
     currentQuotationId,
     generateTransporter,
     onGenerateTransporterChange

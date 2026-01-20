@@ -82,6 +82,17 @@ const InvoicePreview = forwardRef(({ formData, items, gstRate, gstType, totals, 
                             )}
                             {!formData.logoUrl && <div className="company-name-logo">{formData.sellerName.toUpperCase()}</div>}
                         </div>
+                        {/* Copy Label */}
+                        <div className="invoice-copy-label" style={{
+                            border: '1px solid #000',
+                            padding: '4px 8px',
+                            fontSize: '10px',
+                            fontWeight: 'bold',
+                            textTransform: 'uppercase',
+                            borderRadius: '4px'
+                        }}>
+                            {formData.copyLabel || 'Original for Recipient'}
+                        </div>
                     </div>
                 </div>
 
