@@ -105,16 +105,16 @@ function BillHistory({ userId }) {
         }));
 
         const qFormData = {
-            // Seller Details
-            sellerName: company.company_name || '',
-            sellerAddress: company.address || '',
-            sellerPhone: company.phone || '',
-            sellerGST: company.gst_number || '',
-            sellerPAN: company.pan_number || '',
-            sellerEmail: company.email || '',
-            sellerTagline: company.tagline || '',
-            logoUrl: company.logo_url || '',
-            sellerSignature: company.signature_url || '',
+            // Seller Details - Prioritize snapshot
+            sellerName: inv.sellerName || company.company_name || '',
+            sellerAddress: inv.sellerAddress || company.address || '',
+            sellerPhone: inv.sellerPhone || company.phone || '',
+            sellerGST: inv.sellerGST || company.gst_number || '',
+            sellerPAN: inv.sellerPAN || company.pan_number || '',
+            sellerEmail: inv.sellerEmail || company.email || '',
+            sellerTagline: inv.sellerTagline || company.tagline || '',
+            logoUrl: inv.logoUrl || company.logo_url || '',
+            sellerSignature: inv.sellerSignature || company.signature_url || '',
 
             // Buyer Details
             buyerName: quotation.buyer_name || '',

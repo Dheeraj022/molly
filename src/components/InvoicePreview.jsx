@@ -62,7 +62,7 @@ const InvoicePreview = forwardRef(({ formData, items, gstRate, gstType, totals, 
     const sellerPAN = formData.sellerPAN || (formData.sellerGST ? formData.sellerGST.substring(2, 12) : '');
 
     return (
-        <div ref={ref} className="invoice-template" style={{ display: 'none' }}>
+        <div ref={ref} className="invoice-template">
             <div className="invoice-page">
                 {/* Header with Logo and Company Name */}
                 <div className="invoice-header">
