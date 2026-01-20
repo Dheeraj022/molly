@@ -1,5 +1,8 @@
+import { useState, useEffect } from 'react';
 import ItemRow from './ItemRow';
 import Icons, { ICON_SIZES } from './icons';
+import { getProducts } from '../services/productService';
+import { supabase } from '../services/supabase';
 
 function InvoiceForm({
     formData,
@@ -20,6 +23,44 @@ function InvoiceForm({
     onViewQuotations,
     currentQuotationId
 }) {
+    const [savedProducts, setSavedProducts] = useState([]);
+    const [selectedProductId, setSelectedProductId] = useState('');
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const products = await getProducts(user.id);
+                setSavedProducts(products || []);
+            }
+        };
+        fetchProducts();
+    }, []);
+
+    const handleProductSelect = (e) => {
+        const productId = e.target.value;
+        setSelectedProductId(productId);
+
+        if (productId) {
+            const product = savedProducts.find(p => p.id === productId);
+            if (product) {
+                onAddItem({
+                    description: product.name + (product.description ? ` - ${product.description}` : ''),
+                    hsn: product.hsn_code,
+                    unit: 1,
+                    rate: product.price,
+                    amount: product.price, // unit * rate
+                    excludeGST: false,
+                    // If product has specific GST rate, we could use it, but global GST is currently used.
+                    // Ideally we could override global GST if the system supported item-level GST fully.
+                    // For now, we just fill the item fields.
+                });
+                // Reset selection so user can pick another
+                setTimeout(() => setSelectedProductId(''), 100);
+            }
+        }
+    };
+
     return (
         <form className="invoice-form" onSubmit={(e) => e.preventDefault()}>
             {/* Seller Details Section */}
@@ -257,10 +298,33 @@ function InvoiceForm({
 
             {/* Items Section */}
             <section className="form-section">
-                <div className="section-header">
-                    <h2>Invoice Items</h2>
-                    <button type="button" className="btn-add" onClick={onAddItem}>
-                        <Icons.Plus size={ICON_SIZES.md} /> Add Item
+                <div className="section-header" style={{ alignItems: 'flex-end', gap: '16px' }}>
+                    <div style={{ flex: 1 }}>
+                        <h2>Invoice Items</h2>
+                    </div>
+
+                    {/* Product Selector */}
+                    <div className="form-group" style={{ marginBottom: 0, minWidth: '200px' }}>
+                        <select
+                            value={selectedProductId}
+                            onChange={handleProductSelect}
+                            style={{
+                                padding: '10px',
+                                borderRadius: '8px',
+                                border: '1px solid #d2d2d7',
+                                width: '100%',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            <option value="">+ Add from Saved Products</option>
+                            {savedProducts.map(p => (
+                                <option key={p.id} value={p.id}>{p.name} (₹{p.price})</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <button type="button" className="btn-add" onClick={() => onAddItem()}>
+                        <Icons.Plus size={ICON_SIZES.md} /> Add Manually
                     </button>
                 </div>
 
