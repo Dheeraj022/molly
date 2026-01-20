@@ -154,14 +154,14 @@ const Products = () => {
                         <tbody>
                             {filteredProducts.map(product => (
                                 <tr key={product.id}>
-                                    <td style={{ fontWeight: 500 }}>{product.name}</td>
-                                    <td>{product.hsn_code || '-'}</td>
-                                    <td>{parseFloat(product.price).toFixed(2)}</td>
-                                    <td>{product.gst_rate}%</td>
-                                    <td style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                    <td style={{ fontWeight: 500 }} data-label="Product Name">{product.name}</td>
+                                    <td data-label="HSN Code">{product.hsn_code || '-'}</td>
+                                    <td data-label="Price (₹)">{parseFloat(product.price).toFixed(2)}</td>
+                                    <td data-label="GST Rate (%)">{product.gst_rate}%</td>
+                                    <td style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} data-label="Description">
                                         {product.description || '-'}
                                     </td>
-                                    <td>
+                                    <td data-label="Actions">
                                         <div className="action-buttons">
                                             <button
                                                 className="icon-btn btn-edit"

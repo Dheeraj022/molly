@@ -194,3 +194,69 @@
 .dashboard-form-wrapper {
     max-width: 100%;
 }
+
+/* Responsive Table Styles */
+@media (max-width: 768px) {
+    .table-container {
+        border: none;
+        box-shadow: none;
+        background: transparent;
+        border-radius: 0;
+        overflow: visible;
+    }
+
+    .data-table {
+        display: block;
+    }
+
+    .data-table thead {
+        display: none;
+    }
+
+    .data-table tbody {
+        display: block;
+        width: 100%;
+    }
+
+    .data-table tr {
+        display: block;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        margin-bottom: 16px;
+        padding: 16px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .data-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid #f3f4f6;
+        font-size: 14px;
+        text-align: right;
+    }
+
+    .data-table td:last-child {
+        border-bottom: none;
+        flex-direction: row;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 8px;
+        padding-top: 12px;
+    }
+
+    .data-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #6b7280;
+        font-size: 13px;
+        text-align: left;
+    }
+
+    /* Hide label for Actions since buttons explain themselves */
+    .data-table td[data-label="Actions"]::before {
+        display: none;
+    }
+}

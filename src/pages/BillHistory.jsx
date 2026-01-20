@@ -263,16 +263,16 @@ function BillHistory({ userId }) {
                         <tbody>
                             {filteredQuotations.map(q => (
                                 <tr key={q.id}>
-                                    <td className="font-mono">{q.quotation_no}</td>
-                                    <td>{q.buyer_name}</td>
-                                    <td>{formatDate(q.created_at)}</td>
-                                    <td className="font-semibold">{formatCurrency(q.total_after_tax)}</td>
-                                    <td>
+                                    <td className="font-mono" data-label="Invoice No">{q.quotation_no}</td>
+                                    <td data-label="Customer">{q.buyer_name}</td>
+                                    <td data-label="Date">{formatDate(q.created_at)}</td>
+                                    <td className="font-semibold" data-label="Amount">{formatCurrency(q.total_after_tax)}</td>
+                                    <td data-label="Status">
                                         <span className={`status-badge status-${q.status}`}>
                                             {q.status}
                                         </span>
                                     </td>
-                                    <td>
+                                    <td data-label="Actions">
                                         <div className="action-buttons">
                                             <button
                                                 onClick={() => navigate('/create-bill', { state: { quotation: q } })}
