@@ -14,6 +14,11 @@
     transition: margin-left 0.3s ease;
 }
 
+.main-content.expanded {
+    margin-left: 80px;
+    /* Collapsed sidebar width */
+}
+
 .content-wrapper {
     padding: 32px;
     max-width: 1200px;

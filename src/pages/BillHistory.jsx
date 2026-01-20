@@ -79,10 +79,13 @@ function BillHistory({ userId }) {
 
     function formatDate(dateString) {
         const date = new Date(dateString);
-        return date.toLocaleDateString('en-IN', {
+        return date.toLocaleString('en-IN', {
             day: '2-digit',
             month: 'short',
-            year: 'numeric'
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
         });
     }
 
@@ -170,18 +173,80 @@ function BillHistory({ userId }) {
         }
     }, [downloadData]);
 
+    const [searchTerm, setSearchTerm] = useState('');
+    const [dateFilter, setDateFilter] = useState('');
+
+    const filteredQuotations = quotations.filter(q => {
+        const matchesSearch =
+            q.buyer_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            q.quotation_no?.toLowerCase().includes(searchTerm.toLowerCase());
+
+        let matchesDate = true;
+        if (dateFilter) {
+            const rowDate = new Date(q.created_at).toISOString().split('T')[0];
+            matchesDate = rowDate === dateFilter;
+        }
+
+        return matchesSearch && matchesDate;
+    });
+
     return (
         <div className="page-container">
             <div className="page-header">
                 <h1 className="page-title">Bill History</h1>
             </div>
 
+            {/* Filters */}
+            <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', flexWrap: 'wrap' }}>
+                <input
+                    type="text"
+                    placeholder="Search by Client or Invoice No..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    style={{
+                        padding: '10px 16px',
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '8px',
+                        minWidth: '300px',
+                        fontSize: '14px'
+                    }}
+                />
+                <input
+                    type="date"
+                    value={dateFilter}
+                    onChange={(e) => setDateFilter(e.target.value)}
+                    style={{
+                        padding: '10px 16px',
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '8px',
+                        fontSize: '14px'
+                    }}
+                />
+                {(searchTerm || dateFilter) && (
+                    <button
+                        onClick={() => { setSearchTerm(''); setDateFilter(''); }}
+                        style={{
+                            padding: '10px 16px',
+                            border: '1px solid #e5e7eb',
+                            borderRadius: '8px',
+                            background: 'white',
+                            cursor: 'pointer',
+                            color: '#ef4444'
+                        }}
+                    >
+                        Clear Filters
+                    </button>
+                )}
+            </div>
+
             {error && <div className="text-red-500 mb-4">{error}</div>}
 
             {loading ? (
                 <div className="loading-state">Loading bills...</div>
-            ) : quotations.length === 0 ? (
-                <div className="empty-state">No bills found. Create one to get started.</div>
+            ) : filteredQuotations.length === 0 ? (
+                <div className="empty-state">
+                    {searchTerm || dateFilter ? 'No bills match your filters.' : 'No bills found. Create one to get started.'}
+                </div>
             ) : (
                 <div className="table-container">
                     <table className="data-table">
@@ -196,7 +261,7 @@ function BillHistory({ userId }) {
                             </tr>
                         </thead>
                         <tbody>
-                            {quotations.map(q => (
+                            {filteredQuotations.map(q => (
                                 <tr key={q.id}>
                                     <td className="font-mono">{q.quotation_no}</td>
                                     <td>{q.buyer_name}</td>

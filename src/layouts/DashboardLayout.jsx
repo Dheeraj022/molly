@@ -6,12 +6,22 @@ import '../styles/layout.css';
 
 const DashboardLayout = ({ onLogout }) => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(false);
+
+    const toggleSidebar = () => {
+        setIsCollapsed(!isCollapsed);
+    };
 
     return (
         <div className="dashboard-layout">
-            <Sidebar isOpen={isSidebarOpen} onLogout={onLogout} />
+            <Sidebar
+                isOpen={isSidebarOpen}
+                onLogout={onLogout}
+                isCollapsed={isCollapsed}
+                toggleSidebar={toggleSidebar}
+            />
 
-            <div className="main-content">
+            <div className={`main-content ${isCollapsed ? 'expanded' : ''}`}>
                 <header className="mobile-header">
                     <button
                         className="menu-toggle"

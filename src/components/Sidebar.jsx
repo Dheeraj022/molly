@@ -7,11 +7,13 @@ import {
     Building2,
     Users,
     Download,
-    LogOut
+    LogOut,
+    PanelLeftClose,
+    PanelLeftOpen
 } from 'lucide-react';
 import '../styles/sidebar.css';
 
-const Sidebar = ({ isOpen, onLogout }) => {
+const Sidebar = ({ isOpen, onLogout, isCollapsed, toggleSidebar }) => {
     const location = useLocation();
 
     const menuItems = [
@@ -25,9 +27,12 @@ const Sidebar = ({ isOpen, onLogout }) => {
     ];
 
     return (
-        <div className={`sidebar ${isOpen ? 'open' : ''}`}>
+        <div className={`sidebar ${isOpen ? 'open' : ''} ${isCollapsed ? 'collapsed' : ''}`}>
             <div className="sidebar-header">
                 <h2>Invoice<span className="highlight">Maker</span></h2>
+                <button className="toggle-btn" onClick={toggleSidebar}>
+                    {isCollapsed ? <PanelLeftOpen size={20} /> : <PanelLeftClose size={20} />}
+                </button>
             </div>
 
             <nav className="sidebar-nav">
