@@ -14,7 +14,12 @@ export async function getCompanies(userId) {
 
         const { data, error } = await supabase
             .from('companies')
-            .select('*')
+            .select(`
+                *,
+                bank_accounts (
+                    *
+                )
+            `)
             .eq('user_id', userId)
             .order('company_name');
 
@@ -142,9 +147,15 @@ export async function saveCompany(companyData, userId) {
                 email: companyData.sellerEmail,
                 tagline: companyData.sellerTagline || null,
                 logo_url: companyData.logoUrl || null,
-                signature_url: companyData.signatureUrl || null
+                signature_url: companyData.signatureUrl || null,
+                bank_id: companyData.bankId || null
             }])
-            .select()
+            .select(`
+                *,
+                bank_accounts (
+                    *
+                )
+            `)
             .single();
 
         if (error) {
@@ -189,11 +200,17 @@ export async function updateCompany(id, companyData, userId) {
                 email: companyData.sellerEmail,
                 tagline: companyData.sellerTagline || null,
                 logo_url: companyData.logoUrl || null,
-                signature_url: companyData.signatureUrl || null
+                signature_url: companyData.signatureUrl || null,
+                bank_id: companyData.bankId || null
             })
             .eq('id', id)
             .eq('user_id', userId)
-            .select()
+            .select(`
+                *,
+                bank_accounts (
+                    *
+                )
+            `)
             .single();
 
         if (error) throw error;

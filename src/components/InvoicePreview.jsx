@@ -238,6 +238,26 @@ const InvoicePreview = forwardRef(({ formData, items, gstRate, gstType, totals, 
                                     <div className="words-label">Total Invoice Amount in Words:</div>
                                     <div className="words-value">{amountInWords}</div>
                                     <div className="reverse-charge">Under Reverse Charges: - NO</div>
+
+                                    {/* Bank Details Section */}
+                                    {formData.bankName && (
+                                        <div className="bank-details-section" style={{ marginTop: '10px', paddingTop: '5px', borderTop: '1px dashed #000' }}>
+                                            <div style={{ fontWeight: 'bold', textDecoration: 'underline', marginBottom: '2px', fontSize: '10px' }}>Company's Bank Details</div>
+                                            <div style={{ display: 'grid', gridTemplateColumns: '70px 1fr', fontSize: '10px', lineHeight: '1.2' }}>
+                                                <div>Bank Name</div>
+                                                <div>: {formData.bankName}</div>
+
+                                                <div>A/c No.</div>
+                                                <div>: {formData.accountNumber}</div>
+
+                                                <div>Branch</div>
+                                                <div>: {formData.branchName || '-'}</div>
+
+                                                <div>IFSC Code</div>
+                                                <div>: {formData.ifscCode}</div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </td>
                                 <td className="summary-label">Total Amount<br />Before Tax:</td>
                                 <td className="summary-value">{totals.totalBeforeTax.toFixed(2)}</td>

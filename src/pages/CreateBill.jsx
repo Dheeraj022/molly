@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import html2pdf from 'html2pdf.js';
+import { getBanks } from '../services/bankService';
 import InvoiceForm from '../components/InvoiceForm';
 import InvoicePreview from '../components/InvoicePreview';
 import CompanySelector from '../components/CompanySelector';
@@ -30,6 +31,8 @@ function CreateBill({ userId }) {
     const [gstRate, setGstRate] = useState(18);
     const [gstType, setGstType] = useState('');
 
+    const [banks, setBanks] = useState([]); // User's bank accounts
+
     const [selectedCompany, setSelectedCompany] = useState(null);
     const [selectedBuyer, setSelectedBuyer] = useState(null);
     const [currentQuotationId, setCurrentQuotationId] = useState(null);
@@ -50,6 +53,13 @@ function CreateBill({ userId }) {
             // Clear state to avoid reloading on refresh if desired, but keeping it is fine
         }
     }, [initialQuotation]);
+
+    // Load banks on mount
+    useEffect(() => {
+        if (userId) {
+            getBanks(userId).then(setBanks).catch(console.error);
+        }
+    }, [userId]);
 
     const loadQuotation = (quotation) => {
         setFormData(prev => ({
@@ -135,7 +145,12 @@ function CreateBill({ userId }) {
                 sellerEmail: company.email,
                 sellerTagline: company.tagline || '',
                 logoUrl: company.logo_url || '',
-                sellerSignature: company.signature_url || ''
+                sellerSignature: company.signature_url || '',
+                bankName: company.bank_accounts?.bank_name || '',
+                accountNumber: company.bank_accounts?.account_number || '',
+                ifscCode: company.bank_accounts?.ifsc_code || '',
+                branchName: company.bank_accounts?.branch_name || '',
+                bankId: company.bank_id || '' // Set bankId if linked
             }));
             setSelectedCompany(company);
         } else {
@@ -152,8 +167,33 @@ function CreateBill({ userId }) {
                 buyerGST: buyer.gst_number || ''
             }));
             setSelectedBuyer(buyer);
-        } else {
-            setSelectedBuyer(null);
+        }
+    };
+
+    const handleBankSelect = (e) => {
+        const bankId = e.target.value;
+        if (!bankId) {
+            setFormData(prev => ({
+                ...prev,
+                bankId: '',
+                bankName: '',
+                accountNumber: '',
+                ifscCode: '',
+                branchName: ''
+            }));
+            return;
+        }
+
+        const bank = banks.find(b => b.id === bankId);
+        if (bank) {
+            setFormData(prev => ({
+                ...prev,
+                bankId: bank.id,
+                bankName: bank.bank_name,
+                accountNumber: bank.account_number,
+                ifscCode: bank.ifsc_code || '',
+                branchName: bank.branch_name || ''
+            }));
         }
     };
 
@@ -258,7 +298,27 @@ function CreateBill({ userId }) {
                 onManageClick={() => setShowCompanyManager(true)}
                 selectedCompanyId={selectedCompany?.id}
                 userId={userId}
+                userId={userId}
             />
+
+            {/* Bank Selection Override */}
+            <div className="card" style={{ marginBottom: '20px', padding: '15px' }}>
+                <div className="form-group" style={{ maxWidth: '400px' }}>
+                    <label>Select Bank Account (for this invoice)</label>
+                    <select
+                        className="form-control"
+                        value={formData.bankId || ''}
+                        onChange={handleBankSelect}
+                    >
+                        <option value="">-- No Bank Selected --</option>
+                        {banks.map(bank => (
+                            <option key={bank.id} value={bank.id}>
+                                {bank.bank_name} - {bank.account_number}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            </div>
 
             <BuyerSelector
                 onBuyerSelect={handleBuyerSelect}

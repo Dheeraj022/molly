@@ -11,6 +11,7 @@ import CreateBill from './pages/CreateBill';
 import BillHistory from './pages/BillHistory';
 import Products from './pages/Products';
 import Companies from './pages/Companies';
+import BankDetails from './pages/BankDetails';
 import Buyers from './pages/Buyers';
 import BillingReports from './pages/BillingReports';
 import Downloads from './pages/Downloads';
@@ -109,6 +110,7 @@ function App() {
         <Route path="/bills" element={<BillHistory userId={currentUser?.id} />} />
         <Route path="/products" element={<Products />} />
         <Route path="/companies" element={<Companies />} />
+        <Route path="/bank-details" element={<BankDetails />} />
         <Route path="/buyers" element={<Buyers />} />
         <Route path="/billing-reports" element={<BillingReports />} />
         <Route path="/downloads" element={<Downloads />} />

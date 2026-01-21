@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Search, X, Loader2, Save, Upload } from 'lucide-react';
 import { getCompanies, saveCompany, updateCompany, deleteCompany, uploadLogo, uploadSignature } from '../services/companyService';
+import { getBanks } from '../services/bankService';
 import { supabase } from '../services/supabase';
 import '../styles/dashboard.css';
 
 const Companies = () => {
     const [companies, setCompanies] = useState([]);
+    const [banks, setBanks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -23,14 +25,18 @@ const Companies = () => {
         sellerPAN: '',
         sellerTagline: '',
         logoUrl: '',
-        signatureUrl: ''
+        signatureUrl: '',
+        bankId: ''
     });
 
     useEffect(() => {
         const fetchUser = async () => {
             const { data: { user } } = await supabase.auth.getUser();
             setCurrentUser(user);
-            if (user) loadCompanies(user.id);
+            if (user) {
+                loadCompanies(user.id);
+                loadBanks(user.id);
+            }
         };
         fetchUser();
     }, []);
@@ -47,6 +53,15 @@ const Companies = () => {
         }
     };
 
+    const loadBanks = async (userId) => {
+        try {
+            const data = await getBanks(userId);
+            setBanks(data);
+        } catch (error) {
+            console.error('Failed to load banks', error);
+        }
+    };
+
     const handleOpenModal = (company = null) => {
         if (company) {
             setEditingCompany(company);
@@ -59,7 +74,8 @@ const Companies = () => {
                 sellerPAN: company.pan_number || '',
                 sellerTagline: company.tagline || '',
                 logoUrl: company.logo_url || '',
-                signatureUrl: company.signature_url || ''
+                signatureUrl: company.signature_url || '',
+                bankId: company.bank_id || ''
             });
         } else {
             setEditingCompany(null);
@@ -72,7 +88,8 @@ const Companies = () => {
                 sellerPAN: '',
                 sellerTagline: '',
                 logoUrl: '',
-                signatureUrl: ''
+                signatureUrl: '',
+                bankId: ''
             });
         }
         setIsModalOpen(true);

@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { getCompanies, saveCompany, updateCompany, deleteCompany, uploadLogo, uploadSignature } from '../services/companyService';
+import { getBanks } from '../services/bankService';
 import Icons, { ICON_SIZES } from './icons';
 
 function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData, userId }) {
     const [companies, setCompanies] = useState([]);
+    const [banks, setBanks] = useState([]);
     const [editingCompany, setEditingCompany] = useState(null);
     const [showNewCompanyForm, setShowNewCompanyForm] = useState(false);
 
@@ -17,7 +19,8 @@ function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData, user
         address: '',
         tagline: '',
         logoUrl: '',
-        signatureUrl: ''
+        signatureUrl: '',
+        bankId: ''
     });
 
     const [formData, setFormData] = useState({
@@ -28,7 +31,8 @@ function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData, user
         sellerEmail: '',
         sellerTagline: '',
         logoUrl: '',
-        signatureUrl: ''
+        signatureUrl: '',
+        bankId: ''
     });
 
     const [logoFile, setLogoFile] = useState(null);
@@ -39,6 +43,7 @@ function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData, user
     useEffect(() => {
         if (isOpen && userId) {
             loadCompanies();
+            loadBanks();
         }
     }, [isOpen, userId]);
 
@@ -67,8 +72,10 @@ function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData, user
             sellerGST: company.gst_number,
             sellerEmail: company.email,
             sellerTagline: company.tagline || '',
+            sellerTagline: company.tagline || '',
             logoUrl: company.logo_url || '',
-            signatureUrl: company.signature_url || ''
+            signatureUrl: company.signature_url || '',
+            bankId: company.bank_id || ''
         });
         setLogoFile(null);
     }
@@ -184,7 +191,9 @@ function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData, user
                 sellerAddress: newCompanyData.address.trim() || '',
                 sellerTagline: newCompanyData.tagline.trim() || '',
                 logoUrl: newCompanyData.logoUrl || '',
-                signatureUrl: newCompanyData.signatureUrl || ''
+                logoUrl: newCompanyData.logoUrl || '',
+                signatureUrl: newCompanyData.signatureUrl || '',
+                bankId: newCompanyData.bankId || null
             };
 
             const savedCompany = await saveCompany(companyData, userId);
@@ -203,7 +212,8 @@ function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData, user
                 panNumber: '',
                 address: '',
                 tagline: '',
-                signatureUrl: ''
+                signatureUrl: '',
+                bankId: ''
             });
 
             // Auto-select the newly created company
@@ -230,7 +240,8 @@ function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData, user
             email: '',
             panNumber: '',
             address: '',
-            tagline: ''
+            tagline: '',
+            bankId: ''
         });
         setError(null);
     }
@@ -432,6 +443,23 @@ function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData, user
                                     />
                                 </div>
 
+                                <div className="form-group full-width">
+                                    <label>Bank Account</label>
+                                    <select
+                                        value={newCompanyData.bankId}
+                                        onChange={(e) => setNewCompanyData({ ...newCompanyData, bankId: e.target.value })}
+                                        style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #d1d5db' }}
+                                        disabled={loading}
+                                    >
+                                        <option value="">-- Select Bank Account --</option>
+                                        {banks.map(bank => (
+                                            <option key={bank.id} value={bank.id}>
+                                                {bank.bank_name} - {bank.account_number.slice(-4)}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
 
                                 <div className="form-group full-width">
                                     <label>Company Logo</label>
@@ -573,6 +601,22 @@ function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData, user
                                     />
                                 </div>
 
+                                <div className="form-group full-width">
+                                    <label>Bank Account</label>
+                                    <select
+                                        value={formData.bankId}
+                                        onChange={(e) => setFormData({ ...formData, bankId: e.target.value })}
+                                        style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #d1d5db' }}
+                                    >
+                                        <option value="">-- Select Bank Account --</option>
+                                        {banks.map(bank => (
+                                            <option key={bank.id} value={bank.id}>
+                                                {bank.bank_name} - {bank.account_number.slice(-4)}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
 
                                 <div className="form-group full-width">
                                     <label>Company Logo</label>
@@ -640,7 +684,8 @@ function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData, user
                                             sellerPAN: '',
                                             sellerEmail: '',
                                             sellerTagline: '',
-                                            signatureUrl: ''
+                                            signatureUrl: '',
+                                            bankId: ''
                                         });
                                     }}
                                 >
@@ -658,8 +703,8 @@ function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData, user
                         </div>
                     )}
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }
 
