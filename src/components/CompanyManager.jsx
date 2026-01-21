@@ -18,6 +18,7 @@ function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData, user
         panNumber: '',
         address: '',
         tagline: '',
+        invoicePrefix: '',
         logoUrl: '',
         signatureUrl: '',
         bankId: ''
@@ -30,6 +31,7 @@ function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData, user
         sellerGST: '',
         sellerEmail: '',
         sellerTagline: '',
+        invoicePrefix: '',
         logoUrl: '',
         signatureUrl: '',
         bankId: ''
@@ -63,6 +65,15 @@ function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData, user
         }
     }
 
+    async function loadBanks() {
+        try {
+            const data = await getBanks(userId);
+            setBanks(data);
+        } catch (err) {
+            console.error('Failed to load banks', err);
+        }
+    }
+
     function handleEdit(company) {
         setEditingCompany(company);
         setFormData({
@@ -72,7 +83,7 @@ function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData, user
             sellerGST: company.gst_number,
             sellerEmail: company.email,
             sellerTagline: company.tagline || '',
-            sellerTagline: company.tagline || '',
+            invoicePrefix: company.invoice_prefix || '',
             logoUrl: company.logo_url || '',
             signatureUrl: company.signature_url || '',
             bankId: company.bank_id || ''
@@ -191,8 +202,8 @@ function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData, user
                 sellerAddress: newCompanyData.address.trim() || '',
                 sellerTagline: newCompanyData.tagline.trim() || '',
                 logoUrl: newCompanyData.logoUrl || '',
-                logoUrl: newCompanyData.logoUrl || '',
                 signatureUrl: newCompanyData.signatureUrl || '',
+                invoicePrefix: newCompanyData.invoicePrefix || null,
                 bankId: newCompanyData.bankId || null
             };
 
@@ -212,6 +223,7 @@ function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData, user
                 panNumber: '',
                 address: '',
                 tagline: '',
+                invoicePrefix: '',
                 signatureUrl: '',
                 bankId: ''
             });
@@ -241,6 +253,7 @@ function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData, user
             panNumber: '',
             address: '',
             tagline: '',
+            invoicePrefix: '',
             bankId: ''
         });
         setError(null);
@@ -269,6 +282,7 @@ function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData, user
                 sellerPAN: '',
                 sellerEmail: '',
                 sellerTagline: '',
+                invoicePrefix: '',
                 signatureUrl: ''
             });
             onCompanySaved();
@@ -396,6 +410,19 @@ function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData, user
                                         disabled={loading}
                                     />
                                     <small className="field-hint">15 characters required</small>
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Invoice Prefix</label>
+                                    <input
+                                        type="text"
+                                        value={newCompanyData.invoicePrefix}
+                                        onChange={(e) => setNewCompanyData({ ...newCompanyData, invoicePrefix: e.target.value.toUpperCase() })}
+                                        placeholder="e.g. MSC"
+                                        maxLength="5"
+                                        disabled={loading}
+                                    />
+                                    <small className="field-hint">Used for invoice numbers (MSC/2526/001)</small>
                                 </div>
 
                                 <div className="form-group">
@@ -580,6 +607,18 @@ function CompanyManager({ isOpen, onClose, onCompanySaved, currentFormData, user
                                         onChange={(e) => setFormData({ ...formData, sellerGST: e.target.value })}
                                         required
                                     />
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Invoice Prefix</label>
+                                    <input
+                                        type="text"
+                                        value={formData.invoicePrefix}
+                                        onChange={(e) => setFormData({ ...formData, invoicePrefix: e.target.value.toUpperCase() })}
+                                        placeholder="e.g. MSC"
+                                        maxLength="5"
+                                    />
+                                    <small className="field-hint">Used for invoice numbers (MSC/2526/001)</small>
                                 </div>
 
                                 <div className="form-group">

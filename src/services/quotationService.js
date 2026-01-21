@@ -252,7 +252,7 @@ export async function convertToInvoice(id) {
 }
 
 /**
- * Generate a unique quotation number
+ * Generate a unique quotation number (Fallback legacy)
  * @returns {Promise<string>} Unique quotation number
  */
 export async function generateQuotationNumber() {
@@ -287,5 +287,82 @@ export async function generateQuotationNumber() {
         console.error('Error generating quotation number:', error);
         // Fallback to timestamp-based number
         return `QT-${Date.now()}`;
+    }
+}
+
+/**
+ * Generate a unique Invoice Number based on Company Prefix and Financial Year
+ * Format: {PREFIX}/{YY}{YY+1}/{SEQUENCE} (e.g. MSC/2526/0001)
+ * @param {string} companyId - Selected Company UUID
+ * @returns {Promise<string>} New Invoice Number
+ */
+export async function generateInvoiceNumber(companyId) {
+    try {
+        if (!companyId) {
+            throw new Error('Company ID is required to generate invoice number');
+        }
+
+        // 1. Get Company Prefix
+        const { data: company, error: companyError } = await supabase
+            .from('companies')
+            .select('invoice_prefix, company_name')
+            .eq('id', companyId)
+            .single();
+
+        if (companyError) throw companyError;
+
+        let prefix = company.invoice_prefix;
+        if (!prefix) {
+            // Fallback: First 3 uppercase letters of company name or 'INV'
+            prefix = company.company_name ? company.company_name.substring(0, 3).toUpperCase() : 'INV';
+        }
+
+        // 2. Calculate Financial Year (e.g. 2526 for 2025-2026)
+        const today = new Date();
+        const currentMonth = today.getMonth() + 1; // 1-12
+        const currentYear = today.getFullYear(); // 2025
+
+        let startYear, endYear;
+        // Indian Financial Year: April (4) to March (3)
+        if (currentMonth >= 4) {
+            startYear = currentYear;
+            endYear = currentYear + 1;
+        } else {
+            startYear = currentYear - 1;
+            endYear = currentYear;
+        }
+
+        const fyShort = `${startYear.toString().slice(-2)}${endYear.toString().slice(-2)}`; // "2526"
+
+        const searchPattern = `${prefix}/${fyShort}/%`;
+
+        // 3. Find latest invoice number for this pattern
+        const { data: lastInvoice, error: quoteError } = await supabase
+            .from('quotations')
+            .select('quotation_no')
+            .like('quotation_no', searchPattern)
+            .order('created_at', { ascending: false })
+            .limit(1);
+
+        if (quoteError) throw quoteError;
+
+        let nextNum = 1;
+        if (lastInvoice && lastInvoice.length > 0) {
+            const lastNo = lastInvoice[0].quotation_no;
+            // Expected format: PRE/FY/0001
+            const parts = lastNo.split('/');
+            if (parts.length === 3) {
+                const lastSeq = parseInt(parts[2]);
+                if (!isNaN(lastSeq)) {
+                    nextNum = lastSeq + 1;
+                }
+            }
+        }
+
+        return `${prefix}/${fyShort}/${String(nextNum).padStart(4, '0')}`;
+
+    } catch (error) {
+        console.error('Error generating invoice number:', error);
+        return null; // Handle error gracefully in frontend
     }
 }

@@ -148,7 +148,8 @@ export async function saveCompany(companyData, userId) {
                 tagline: companyData.sellerTagline || null,
                 logo_url: companyData.logoUrl || null,
                 signature_url: companyData.signatureUrl || null,
-                bank_id: companyData.bankId || null
+                bank_id: companyData.bankId || null,
+                invoice_prefix: companyData.invoicePrefix || null
             }])
             .select(`
                 *,
@@ -201,7 +202,8 @@ export async function updateCompany(id, companyData, userId) {
                 tagline: companyData.sellerTagline || null,
                 logo_url: companyData.logoUrl || null,
                 signature_url: companyData.signatureUrl || null,
-                bank_id: companyData.bankId || null
+                bank_id: companyData.bankId || null,
+                invoice_prefix: companyData.invoicePrefix || null
             })
             .eq('id', id)
             .eq('user_id', userId)

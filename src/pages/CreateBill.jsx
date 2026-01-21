@@ -10,7 +10,7 @@ import BuyerSelector from '../components/BuyerSelector';
 import BuyerManager from '../components/BuyerManager';
 import { calculateInvoiceTotals } from '../utils/gstCalculation';
 import { numberToWords } from '../utils/numberToWords';
-import { saveQuotation, updateQuotation, checkInvoiceNumberExists } from '../services/quotationService';
+import { saveQuotation, updateQuotation, checkInvoiceNumberExists, generateInvoiceNumber } from '../services/quotationService';
 import '../styles/dashboard.css';
 
 function CreateBill({ userId }) {
@@ -133,7 +133,7 @@ function CreateBill({ userId }) {
         }
     };
 
-    const handleCompanySelect = (company) => {
+    const handleCompanySelect = async (company) => {
         if (company) {
             setFormData(prev => ({
                 ...prev,
@@ -153,6 +153,19 @@ function CreateBill({ userId }) {
                 bankId: company.bank_id || '' // Set bankId if linked
             }));
             setSelectedCompany(company);
+
+            // Auto-generate invoice number if in Create Mode (not Edit Mode)
+            if (!currentQuotationId) {
+                try {
+                    const nextInvoiceNumber = await generateInvoiceNumber(company.id);
+                    if (nextInvoiceNumber) {
+                        setFormData(prev => ({ ...prev, invoiceNumber: nextInvoiceNumber }));
+                    }
+                } catch (err) {
+                    console.error('Failed to generate invoice number', err);
+                }
+            }
+
         } else {
             setSelectedCompany(null);
         }
@@ -297,7 +310,6 @@ function CreateBill({ userId }) {
                 onCompanySelect={handleCompanySelect}
                 onManageClick={() => setShowCompanyManager(true)}
                 selectedCompanyId={selectedCompany?.id}
-                userId={userId}
                 userId={userId}
             />
 
