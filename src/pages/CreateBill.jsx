@@ -236,7 +236,9 @@ function CreateBill({ userId }) {
                 buyerGST: formData.buyerGST,
                 invoiceDetails: { ...formData, gstType, generateTransporter },
                 items, gstRate, totals,
-                status: 'quotation'
+                items, gstRate, totals,
+                status: 'quotation',
+                invoiceDate: formData.invoiceDate
             };
 
             if (currentQuotationId) {
@@ -269,7 +271,9 @@ function CreateBill({ userId }) {
                 buyerGST: formData.buyerGST,
                 invoiceDetails: { ...formData, gstType, generateTransporter },
                 items, gstRate, totals,
-                status: 'invoice'
+                items, gstRate, totals,
+                status: 'invoice',
+                invoiceDate: formData.invoiceDate
             };
 
             if (currentQuotationId) {

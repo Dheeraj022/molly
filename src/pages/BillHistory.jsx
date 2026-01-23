@@ -175,6 +175,7 @@ function BillHistory({ userId }) {
 
     const [searchTerm, setSearchTerm] = useState('');
     const [dateFilter, setDateFilter] = useState('');
+    const [sortBy, setSortBy] = useState('date'); // 'date' or 'updated'
 
     const filteredQuotations = quotations.filter(q => {
         const matchesSearch =
@@ -188,6 +189,15 @@ function BillHistory({ userId }) {
         }
 
         return matchesSearch && matchesDate;
+        return matchesSearch && matchesDate;
+    }).sort((a, b) => {
+        if (sortBy === 'updated') {
+            return new Date(b.updated_at) - new Date(a.updated_at);
+        }
+        // Default: Sort by invoice_date (or created_at fallback)
+        const dateA = new Date(a.invoice_date || a.created_at);
+        const dateB = new Date(b.invoice_date || b.created_at);
+        return dateB - dateA;
     });
 
     return (
@@ -197,7 +207,7 @@ function BillHistory({ userId }) {
             </div>
 
             {/* Filters */}
-            <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', flexWrap: 'wrap', alignItems: 'center' }}>
                 <input
                     type="text"
                     placeholder="Search by Client or Invoice No..."
@@ -237,6 +247,24 @@ function BillHistory({ userId }) {
                         Clear Filters
                     </button>
                 )}
+
+                <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '14px', color: '#6b7280' }}>Sort by:</span>
+                    <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                        style={{
+                            padding: '10px',
+                            border: '1px solid #e5e7eb',
+                            borderRadius: '8px',
+                            fontSize: '14px',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        <option value="date">Invoice Date</option>
+                        <option value="updated">Last Modified</option>
+                    </select>
+                </div>
             </div>
 
             {error && <div className="text-red-500 mb-4">{error}</div>}
@@ -255,6 +283,7 @@ function BillHistory({ userId }) {
                                 <th>Invoice No</th>
                                 <th>Customer</th>
                                 <th>Date</th>
+                                <th>Last Updated</th>
                                 <th>Amount</th>
                                 <th>Status</th>
                                 <th>Actions</th>
@@ -265,7 +294,14 @@ function BillHistory({ userId }) {
                                 <tr key={q.id}>
                                     <td className="font-mono" data-label="Invoice No">{q.quotation_no}</td>
                                     <td data-label="Customer">{q.buyer_name}</td>
-                                    <td data-label="Date">{formatDate(q.created_at)}</td>
+                                    <td data-label="Date">
+                                        <div style={{ fontWeight: 500 }}>{formatDate(q.invoice_date || q.created_at).split(',')[0]}</div>
+                                    </td>
+                                    <td data-label="Last Updated">
+                                        <div style={{ fontSize: '12px', color: '#6b7280' }}>
+                                            {formatDate(q.updated_at)}
+                                        </div>
+                                    </td>
                                     <td className="font-semibold" data-label="Amount">{formatCurrency(q.total_after_tax)}</td>
                                     <td data-label="Status">
                                         <span className={`status-badge status-${q.status}`}>

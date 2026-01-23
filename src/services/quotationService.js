@@ -19,6 +19,8 @@ export async function getQuotations(userId) {
         companies (*)
       `)
             .eq('user_id', userId)
+            .eq('user_id', userId)
+            .order('invoice_date', { ascending: false, nullsFirst: false })
             .order('created_at', { ascending: false });
 
         if (error) throw error;
@@ -112,7 +114,9 @@ export async function saveQuotation(quotationData, userId) {
                 total_before_tax: quotationData.totals.totalBeforeTax,
                 total_gst: quotationData.totals.totalGST,
                 total_after_tax: quotationData.totals.totalAfterTax,
-                status: quotationData.status || 'quotation'
+                total_after_tax: quotationData.totals.totalAfterTax,
+                status: quotationData.status || 'quotation',
+                invoice_date: quotationData.invoiceDate || new Date().toISOString()
             }])
             .select()
             .single();
@@ -150,7 +154,9 @@ export async function updateQuotation(id, quotationData, userId) {
                 total_before_tax: quotationData.totals.totalBeforeTax,
                 total_gst: quotationData.totals.totalGST,
                 total_after_tax: quotationData.totals.totalAfterTax,
-                status: quotationData.status
+                total_after_tax: quotationData.totals.totalAfterTax,
+                status: quotationData.status,
+                invoice_date: quotationData.invoiceDate
             })
             .eq('id', id)
             .eq('user_id', userId)

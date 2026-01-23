@@ -114,6 +114,7 @@ function QuotationList({ isOpen, onClose, onLoadQuotation, onDownloadQuotation, 
                                         <th>Company</th>
                                         <th>Customer</th>
                                         <th>Date</th>
+                                        <th>Last Updated</th>
                                         <th>Amount</th>
                                         <th>Status</th>
                                         <th>Actions</th>
@@ -125,7 +126,14 @@ function QuotationList({ isOpen, onClose, onLoadQuotation, onDownloadQuotation, 
                                             <td className="quotation-no">{quotation.quotation_no}</td>
                                             <td>{quotation.companies?.company_name || 'N/A'}</td>
                                             <td>{quotation.buyer_name}</td>
-                                            <td>{formatDate(quotation.created_at)}</td>
+                                            <td>
+                                                <div style={{ fontWeight: 500 }}>{formatDate(quotation.invoice_date || quotation.created_at)}</div>
+                                            </td>
+                                            <td>
+                                                <div style={{ fontSize: '12px', color: '#6b7280' }}>
+                                                    {formatDate(quotation.updated_at)}
+                                                </div>
+                                            </td>
                                             <td className="amount">{formatCurrency(quotation.total_after_tax)}</td>
                                             <td>
                                                 <span className={`status-badge status-${quotation.status}`}>
