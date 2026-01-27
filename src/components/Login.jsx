@@ -54,7 +54,7 @@ function Login({ onLogin, onShowRegister, onShowForgotPassword }) {
                     <div className="logo-circle">
                         <span className="logo-text">INV</span>
                     </div>
-                    <h1 className="login-title">Welcome Back</h1>
+                    <h1 className="login-title">Welcome</h1>
                     <p className="login-subtitle">Sign in to GST Invoice Maker</p>
                 </div>
 

@@ -46,7 +46,7 @@ const Dashboard = () => {
         <div className="page-container">
             <div className="page-header">
                 <h1 className="page-title">Dashboard</h1>
-                {user && <p className="page-subtitle">Welcome back, {user.user_metadata?.username || user.email.split('@')[0]}</p>}
+                {user && <p className="page-subtitle">Welcome, {user.user_metadata?.username || user.email.split('@')[0]}</p>}
             </div>
 
             <div className="stats-grid">
