@@ -51,8 +51,8 @@ function Login({ onLogin, onShowRegister, onShowForgotPassword }) {
         <div className="login-container">
             <div className="login-box">
                 <div className="login-header">
-                    <div className="logo-circle">
-                        <span className="logo-text">INV</span>
+                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+                        <img src="/logo.svg" alt="Logo" style={{ width: '70px', height: '70px' }} />
                     </div>
                     <h1 className="login-title">Welcome</h1>
                     <p className="login-subtitle">Sign in to GST Invoice Maker</p>

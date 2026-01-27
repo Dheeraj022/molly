@@ -87,8 +87,8 @@ function LandingPage({ onGetStarted }) {
             <nav className="landing-nav">
                 <div className="nav-container">
                     <div className="nav-logo">
-                        <BarChart3 className="logo-icon" size={24} />
-                        <span className="logo-text">InvoiceHub</span>
+                        <img src="/logo.svg" alt="InvoiceHub Logo" className="logo-icon" style={{ width: '120px', height: 'auto' }} />
+                        <span className="logo-text"></span>
                     </div>
                     <button className="nav-cta" onClick={onGetStarted}>
                         Sign In
@@ -356,7 +356,7 @@ function LandingPage({ onGetStarted }) {
                 <div className="footer-container">
                     <div className="footer-brand">
                         <div className="footer-logo">
-                            <BarChart3 className="logo-icon" size={24} />
+                            <img src="/logo.svg" alt="InvoiceHub Logo" className="logo-icon" style={{ width: '24px', height: '24px' }} />
                             <span className="logo-text">InvoiceHub</span>
                         </div>
                         <p className="footer-description">
