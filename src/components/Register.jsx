@@ -4,6 +4,7 @@ import '../styles/login.css';
 
 function Register({ onBackToLogin }) {
     const [formData, setFormData] = useState({
+        username: '',
         email: '',
         phone: '',
         password: '',
@@ -22,8 +23,8 @@ function Register({ onBackToLogin }) {
     };
 
     const validateForm = () => {
-        if (!formData.email || !formData.password || !formData.confirmPassword) {
-            setError('Email and password are required');
+        if (!formData.username || !formData.email || !formData.password || !formData.confirmPassword) {
+            setError('All fields marked with * are required');
             return false;
         }
 
@@ -56,7 +57,7 @@ function Register({ onBackToLogin }) {
         setLoading(true);
         setError('');
 
-        const result = await signUp(formData.email, formData.password, formData.phone);
+        const result = await signUp(formData.email, formData.password, formData.phone, formData.username);
 
         setLoading(false);
 
@@ -118,6 +119,20 @@ function Register({ onBackToLogin }) {
                             {error}
                         </div>
                     )}
+
+                    <div className="form-group">
+                        <label htmlFor="username">Name *</label>
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            value={formData.username}
+                            onChange={handleChange}
+                            placeholder="Enter your name"
+                            required
+                            disabled={loading}
+                        />
+                    </div>
 
                     <div className="form-group">
                         <label htmlFor="email">Email Address *</label>

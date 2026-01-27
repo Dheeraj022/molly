@@ -5,9 +5,10 @@ import { supabase } from './supabase';
  * @param {string} email - User's email address
  * @param {string} password - User's password
  * @param {string} phone - User's phone number (optional)
+ * @param {string} username - User's username
  * @returns {Promise<Object>} User data and session
  */
-export async function signUp(email, password, phone = '') {
+export async function signUp(email, password, phone = '', username = '') {
     try {
         const redirectUrl = `${window.location.origin}/verify-email`;
         console.log('🔗 specific redirect URL:', redirectUrl);
@@ -17,7 +18,8 @@ export async function signUp(email, password, phone = '') {
             password,
             options: {
                 data: {
-                    phone: phone || null
+                    phone: phone || null,
+                    username: username || null
                 },
                 emailRedirectTo: redirectUrl
             }
