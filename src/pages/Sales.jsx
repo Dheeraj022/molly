@@ -149,16 +149,16 @@ function Sales({ userId }) { // Expecting userId to be passed or accessible
                         ) : (
                             sales.map(sale => (
                                 <tr key={sale.id}>
-                                    <td>{new Date(sale.created_at).toLocaleDateString()}</td>
-                                    <td>{sale.invoice_number}</td>
-                                    <td>{sale.buyer_name}</td>
-                                    <td style={{ textAlign: 'right' }}>₹{sale.total_amount}</td>
-                                    <td style={{ textAlign: 'right', color: '#28a745' }}>₹{sale.received_amount}</td>
-                                    <td style={{ textAlign: 'right', color: '#dc3545', fontWeight: 'bold' }}>
+                                    <td data-label="Date">{new Date(sale.created_at).toLocaleDateString()}</td>
+                                    <td data-label="Invoice No">{sale.invoice_number}</td>
+                                    <td data-label="Customer">{sale.buyer_name}</td>
+                                    <td data-label="Total" style={{ textAlign: 'right' }}>₹{sale.total_amount}</td>
+                                    <td data-label="Received" style={{ textAlign: 'right', color: '#28a745' }}>₹{sale.received_amount}</td>
+                                    <td data-label="Pending" style={{ textAlign: 'right', color: '#dc3545', fontWeight: 'bold' }}>
                                         ₹{sale.pending_amount}
                                     </td>
-                                    <td>{getStatusBadge(sale.status)}</td>
-                                    <td>
+                                    <td data-label="Status">{getStatusBadge(sale.status)}</td>
+                                    <td data-label="Action">
                                         <div className="action-buttons">
                                             {sale.status !== 'paid' && (
                                                 <button

@@ -91,7 +91,7 @@ function PaymentModal({ isOpen, onClose, sale, onPaymentAdded, userId }) {
                         <div style={{ width: '100%', height: '1px', background: '#e2e8f0' }}></div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <span style={{ color: '#ef4444', fontSize: '14px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                Warning: Pending Amount
+                                Pending Amount
                             </span>
                             <span style={{ fontSize: '18px', fontWeight: '700', color: '#ef4444', background: '#fee2e2', padding: '4px 12px', borderRadius: '6px' }}>
                                 ₹{sale.pending_amount}
