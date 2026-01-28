@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { createSalesRecord } from './salesService';
 
 /**
  * Get all quotations with company details for a specific user
@@ -122,6 +123,13 @@ export async function saveQuotation(quotationData, userId) {
             .single();
 
         if (error) throw error;
+        if (error) throw error;
+
+        // If saved as invoice, create sales record
+        if (quotationData.status === 'invoice') {
+            await createSalesRecord(data, userId);
+        }
+
         return data;
     } catch (error) {
         console.error('Error saving quotation:', error);
@@ -164,6 +172,13 @@ export async function updateQuotation(id, quotationData, userId) {
             .single();
 
         if (error) throw error;
+        if (error) throw error;
+
+        // If updated to invoice, create/update sales record
+        if (quotationData.status === 'invoice') {
+            await createSalesRecord(data, userId);
+        }
+
         return data;
     } catch (error) {
         console.error('Error updating quotation:', error);
@@ -250,6 +265,11 @@ export async function convertToInvoice(id) {
             .single();
 
         if (error) throw error;
+        if (error) throw error;
+
+        // Create sales record on conversion
+        await createSalesRecord(data, data.user_id);
+
         return data;
     } catch (error) {
         console.error('Error converting to invoice:', error);

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../services/supabase';
 import { getDashboardStats } from '../services/dashboardService';
-import { FileText, IndianRupee, Users, Package } from 'lucide-react';
+import { getSalesStats } from '../services/salesService';
+import { FileText, IndianRupee, Users, Package, Wallet, Clock } from 'lucide-react';
 import '../styles/dashboard.css';
 
 const Dashboard = () => {
@@ -9,7 +10,15 @@ const Dashboard = () => {
         totalInvoices: 0,
         totalRevenue: 0,
         totalBuyers: 0,
+        totalInvoices: 0,
+        totalRevenue: 0,
+        totalBuyers: 0,
         totalProducts: 0
+    });
+    const [salesStats, setSalesStats] = useState({
+        totalSales: 0,
+        totalReceived: 0,
+        totalPending: 0
     });
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState(null);
@@ -23,6 +32,8 @@ const Dashboard = () => {
                 if (user) {
                     const data = await getDashboardStats(user.id);
                     setStats(data);
+                    const sStats = await getSalesStats(user.id);
+                    setSalesStats(sStats);
                 }
             } catch (error) {
                 console.error('Error loading dashboard:', error);
@@ -95,6 +106,42 @@ const Dashboard = () => {
                     </div>
                     <div className="stat-icon-container icon-orange">
                         <Package size={24} />
+                    </div>
+                </div>
+
+                <div className="stat-card">
+                    <div className="stat-content">
+                        <h3 className="stat-label">Total Sales</h3>
+                        <p className="stat-value">
+                            {loading ? '...' : formatCurrency(salesStats.totalSales)}
+                        </p>
+                    </div>
+                    <div className="stat-icon-container icon-blue">
+                        <IndianRupee size={24} />
+                    </div>
+                </div>
+
+                <div className="stat-card">
+                    <div className="stat-content">
+                        <h3 className="stat-label">Total Received</h3>
+                        <p className="stat-value">
+                            {loading ? '...' : formatCurrency(salesStats.totalReceived)}
+                        </p>
+                    </div>
+                    <div className="stat-icon-container icon-green">
+                        <Wallet size={24} />
+                    </div>
+                </div>
+
+                <div className="stat-card">
+                    <div className="stat-content">
+                        <h3 className="stat-label">Total Pending</h3>
+                        <p className="stat-value" style={{ color: '#dc3545' }}>
+                            {loading ? '...' : formatCurrency(salesStats.totalPending)}
+                        </p>
+                    </div>
+                    <div className="stat-icon-container icon-red" style={{ background: '#f8d7da', color: '#721c24' }}>
+                        <Clock size={24} />
                     </div>
                 </div>
             </div>

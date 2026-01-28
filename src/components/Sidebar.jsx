@@ -11,7 +11,8 @@ import {
     PanelLeftClose,
     PanelLeftOpen,
     BarChart,
-    Landmark
+    Landmark,
+    IndianRupee
 } from 'lucide-react';
 import '../styles/sidebar.css';
 
@@ -26,6 +27,7 @@ const Sidebar = ({ isOpen, onLogout, isCollapsed, toggleSidebar }) => {
         { path: '/companies', label: 'Companies', icon: Building2 },
         { path: '/bank-details', label: 'Bank Details', icon: Landmark },
         { path: '/buyers', label: 'Buyers', icon: Users },
+        { path: '/sales', label: 'Sales', icon: IndianRupee },
         { path: '/billing-reports', label: 'Billing Reports', icon: BarChart },
         { path: '/downloads', label: 'Downloads', icon: Download },
     ];

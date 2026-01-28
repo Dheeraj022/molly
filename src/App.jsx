@@ -9,6 +9,7 @@ import DashboardLayout from './layouts/DashboardLayout';
 import Dashboard from './pages/Dashboard';
 import CreateBill from './pages/CreateBill';
 import BillHistory from './pages/BillHistory';
+import Sales from './pages/Sales';
 import Products from './pages/Products';
 import Companies from './pages/Companies';
 import BankDetails from './pages/BankDetails';
@@ -108,6 +109,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/create-bill" element={<CreateBill userId={currentUser?.id} />} />
         <Route path="/bills" element={<BillHistory userId={currentUser?.id} />} />
+        <Route path="/sales" element={<Sales userId={currentUser?.id} />} />
         <Route path="/products" element={<Products />} />
         <Route path="/companies" element={<Companies />} />
         <Route path="/bank-details" element={<BankDetails />} />
