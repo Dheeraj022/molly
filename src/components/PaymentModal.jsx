@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Upload, X, Calendar, CreditCard, FileText, Banknote } from 'lucide-react';
 import '../styles/form.css'; // Reusing form styles
 import { uploadPaymentProof } from '../services/salesService';
 
@@ -62,25 +63,39 @@ function PaymentModal({ isOpen, onClose, sale, onPaymentAdded, userId }) {
 
     return (
         <div className="modal-overlay">
-            <div className="modal-content" style={{ maxWidth: '400px' }}>
+            <div className="modal-content" style={{ maxWidth: '500px', width: '95%' }}>
                 <div className="modal-header">
                     <h2>Record Payment</h2>
-                    <button className="close-btn" onClick={onClose}>&times;</button>
+                    <button className="btn-close" onClick={onClose}>
+                        <X size={20} />
+                    </button>
                 </div>
 
                 <div className="modal-body">
-                    <div style={{ marginBottom: '15px', padding: '10px', background: '#f5f7fa', borderRadius: '8px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                            <span style={{ color: '#666' }}>Invoice No:</span>
-                            <strong>{sale.invoice_number}</strong>
+
+                    {/* Summary Card */}
+                    <div style={{
+                        marginBottom: '24px',
+                        padding: '16px',
+                        background: '#f8fafc',
+                        borderRadius: '12px',
+                        border: '1px solid #e2e8f0',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '12px'
+                    }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ color: '#64748b', fontSize: '14px', fontWeight: '500' }}>Invoice Amount</span>
+                            <span style={{ fontSize: '16px', fontWeight: '600', color: '#1e293b' }}>₹{sale.total_amount}</span>
                         </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                            <span style={{ color: '#666' }}>Total Amount:</span>
-                            <strong>₹{sale.total_amount}</strong>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', color: '#dc3545' }}>
-                            <span>Pending Amount:</span>
-                            <strong>₹{sale.pending_amount}</strong>
+                        <div style={{ width: '100%', height: '1px', background: '#e2e8f0' }}></div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ color: '#ef4444', fontSize: '14px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                Warning: Pending Amount
+                            </span>
+                            <span style={{ fontSize: '18px', fontWeight: '700', color: '#ef4444', background: '#fee2e2', padding: '4px 12px', borderRadius: '6px' }}>
+                                ₹{sale.pending_amount}
+                            </span>
                         </div>
                     </div>
 
@@ -137,19 +152,91 @@ function PaymentModal({ isOpen, onClose, sale, onPaymentAdded, userId }) {
 
                         <div className="form-group">
                             <label>Receipt / Proof (Optional)</label>
-                            <input
-                                type="file"
-                                className="form-control"
-                                accept="image/*,application/pdf"
-                                onChange={(e) => setFile(e.target.files[0])}
-                            />
+                            <div style={{ position: 'relative' }}>
+                                <input
+                                    type="file"
+                                    id="receipt-upload"
+                                    className="form-control"
+                                    accept="image/*,application/pdf"
+                                    onChange={(e) => setFile(e.target.files[0])}
+                                    style={{
+                                        opacity: 0,
+                                        position: 'absolute',
+                                        inset: 0,
+                                        width: '100%',
+                                        height: '100%',
+                                        cursor: 'pointer',
+                                        zIndex: 10
+                                    }}
+                                />
+                                <div style={{
+                                    border: '2px dashed #cbd5e1',
+                                    borderRadius: '8px',
+                                    padding: '24px',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    background: file ? '#f0f9ff' : '#fff',
+                                    borderColor: file ? '#3b82f6' : '#cbd5e1',
+                                    transition: 'all 0.2s'
+                                }}>
+                                    {file ? (
+                                        <>
+                                            <FileText size={24} color="#3b82f6" />
+                                            <span style={{ color: '#3b82f6', fontWeight: '500', fontSize: '14px' }}>
+                                                {file.name}
+                                            </span>
+                                            <span style={{ color: '#64748b', fontSize: '12px' }}>Click to change</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Upload size={24} color="#94a3b8" />
+                                            <span style={{ color: '#64748b', fontWeight: '500', fontSize: '14px' }}>
+                                                Click to upload receipt
+                                            </span>
+                                            <span style={{ color: '#94a3b8', fontSize: '12px' }}>
+                                                JPG, PNG or PDF
+                                            </span>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
                         </div>
 
-                        <div className="modal-footer" style={{ padding: 0, marginTop: '20px' }}>
-                            <button type="button" className="btn btn-secondary" onClick={onClose} disabled={loading}>
+                        <div className="modal-footer" style={{ padding: 0, marginTop: '32px', gap: '12px', display: 'flex' }}>
+                            <button
+                                type="button"
+                                className="btn"
+                                onClick={onClose}
+                                disabled={loading}
+                                style={{
+                                    flex: 1,
+                                    background: '#fff',
+                                    border: '1px solid #e2e8f0',
+                                    color: '#64748b',
+                                    padding: '12px',
+                                    borderRadius: '8px',
+                                    fontWeight: '500'
+                                }}
+                            >
                                 Cancel
                             </button>
-                            <button type="submit" className="btn btn-primary" disabled={loading}>
+                            <button
+                                type="submit"
+                                className="btn"
+                                disabled={loading}
+                                style={{
+                                    flex: 1,
+                                    background: '#6366f1',
+                                    color: 'white',
+                                    border: 'none',
+                                    padding: '12px',
+                                    borderRadius: '8px',
+                                    fontWeight: '600',
+                                    boxShadow: '0 4px 6px -1px rgba(99, 102, 241, 0.2)'
+                                }}
+                            >
                                 {loading ? 'Saving...' : 'Save Payment'}
                             </button>
                         </div>
