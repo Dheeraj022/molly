@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getQuotations, deleteQuotation, duplicateQuotation, convertToInvoice, generateQuotationNumber } from '../services/quotationService';
+import { checkSaleByInvoiceId } from '../services/salesService';
 import { FileText, Trash2, Pencil, CheckCircle2, FileDown } from 'lucide-react';
 import html2pdf from 'html2pdf.js';
 import InvoicePreview from '../components/InvoicePreview';
@@ -39,10 +40,18 @@ function BillHistory({ userId }) {
     }
 
     async function handleDelete(id) {
-        if (!confirm('Are you sure you want to delete this quotation?')) {
-            return;
-        }
         try {
+            // Check for existing sales record first
+            const hasSale = await checkSaleByInvoiceId(id);
+            if (hasSale) {
+                alert("Sales record already exists for this invoice. Please delete the sale record first, then try deleting the invoice.");
+                return;
+            }
+
+            if (!confirm('Are you sure you want to delete this quotation?')) {
+                return;
+            }
+
             await deleteQuotation(id);
             await loadQuotations();
         } catch (err) {
